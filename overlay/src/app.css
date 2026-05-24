@@ -1,0 +1,20 @@
+/* Overlay global reset — component styles live in App.svelte */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 1080px;
+  height: 1920px;
+  background: transparent;
+  overflow: hidden;
+}
+
+#app {
+  width: 1080px;
+  height: 1920px;
+}
