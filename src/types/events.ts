@@ -1,7 +1,6 @@
 import { z } from 'zod';
-
-export const Category = z.enum(['movies', 'songs', 'tv', 'idioms', 'foods', 'places']);
-export type Category = z.infer<typeof Category>;
+import { Category } from './puzzle';
+import { LeaderboardEntry } from './score';
 
 export const Phase = z.enum([
   'REVEAL',
@@ -49,11 +48,6 @@ const RoundEndEvent = z.object({
       points: z.number().int(),
     }),
   ),
-});
-
-const LeaderboardEntry = z.object({
-  userHandle: z.string(),
-  points: z.number().int(),
 });
 
 const LeaderboardUpdateEvent = z.object({
