@@ -39,6 +39,9 @@ desktop.ini
 *.swp
 *.swo
 
+# Claude Code local session state
+.claude/
+
 # Coverage / test artifacts
 coverage/
 .nyc_output/
