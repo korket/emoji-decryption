@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fly, fade } from 'svelte/transition';
+  import { flip } from 'svelte/animate';
   import { connectWS, round, timer, hint, leaderboard, roundEndAnswer, recentWinners, connected } from './lib/store';
 
   // Phase display labels and durations (ms) for timer bar fill calculation
@@ -102,18 +104,24 @@
 
     <!-- ─── Hint Row ──────────────────────────────── -->
     <div class="hint-row">
-      {#if $hint}
-        <span class="hint-text">{$hint}</span>
-      {:else}
-        <span class="hint-placeholder">﹏ ﹏ ﹏</span>
-      {/if}
+      {#key $hint}
+        {#if $hint}
+          <span class="hint-text" in:fade={{ duration: 400 }}>{$hint}</span>
+        {:else}
+          <span class="hint-placeholder">﹏ ﹏ ﹏</span>
+        {/if}
+      {/key}
     </div>
 
     <!-- ─── Winner Flashes ────────────────────────── -->
     {#if $recentWinners.length > 0}
       <div class="winner-flashes">
-        {#each $recentWinners.slice(-3) as w (w.rank)}
-          <div class="winner-flash">
+        {#each $recentWinners.slice(-3) as w (w.id)}
+          <div
+            class="winner-flash"
+            in:fly={{ x: 120, duration: 300 }}
+            out:fly={{ x: 120, duration: 250 }}
+          >
             {medal(w.rank)} <strong>{w.userHandle}</strong> +{w.points} pts
           </div>
         {/each}
@@ -124,8 +132,8 @@
     {#if $leaderboard.length > 0}
       <div class="leaderboard">
         <div class="lb-title">🏆 SESSION</div>
-        {#each $leaderboard as entry, i}
-          <div class="lb-row" class:lb-top={i === 0}>
+        {#each $leaderboard as entry, i (entry.userHandle)}
+          <div class="lb-row" class:lb-top={i === 0} animate:flip={{ duration: 300 }}>
             <span class="lb-rank">#{i + 1}</span>
             <span class="lb-name">{entry.userHandle}</span>
             <span class="lb-pts">{entry.points}</span>
@@ -260,6 +268,7 @@
     text-shadow: 0 0 32px rgba(74, 222, 128, 0.8);
     letter-spacing: 4px;
     margin-bottom: 20px;
+    animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
 
   .emoji-faded {
@@ -427,5 +436,10 @@
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50%       { transform: translateY(8px); }
+  }
+
+  @keyframes pop-in {
+    0%   { opacity: 0; transform: scale(0.6); }
+    100% { opacity: 1; transform: scale(1); }
   }
 </style>

@@ -19,10 +19,13 @@ export interface LeaderboardEntry {
 }
 
 export interface WinnerFlash {
+  id: number;
   userHandle: string;
   points: number;
   rank: number;
 }
+
+let _flashId = 0;
 
 export const round = writable<RoundDisplay | null>(null);
 export const timer = writable<TimerState | null>(null);
@@ -46,9 +49,14 @@ function applyEvent(event: GameEvent): void {
     case 'hint_reveal':
       hint.set(event.revealedLetters);
       break;
-    case 'correct_guess':
-      recentWinners.update((ws) => [...ws, { userHandle: event.userHandle, points: event.points, rank: event.rank }]);
+    case 'correct_guess': {
+      const id = ++_flashId;
+      recentWinners.update((ws) => [...ws, { id, userHandle: event.userHandle, points: event.points, rank: event.rank }]);
+      setTimeout(() => {
+        recentWinners.update((ws) => ws.filter((w) => w.id !== id));
+      }, 3_000);
       break;
+    }
     case 'round_end':
       roundEndAnswer.set(event.answer);
       break;
