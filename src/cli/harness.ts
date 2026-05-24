@@ -1,5 +1,5 @@
 /**
- * Interactive CLI harness — runs a full GameSession in the terminal.
+ * Interactive CLI harness — runs a full GameLoop in the terminal.
  * Seed puzzles are loaded into memory, phases tick in real time, and you
  * type guesses at the ">" prompt.  Ctrl+C to quit.
  *
@@ -8,9 +8,7 @@
 import readline from 'readline';
 import { openDatabase } from '../persistence/db';
 import { seedPuzzlesIfEmpty } from '../persistence/seed';
-import { pickWeightedRandomPuzzle } from '../persistence/puzzles';
-import { GameSession } from '../game/session';
-import { TIMINGS } from '../game/round';
+import { GameLoop } from '../game/loop';
 import type { GameEvent } from '../types/events';
 import type { ChatMessage } from '../types/chat-message';
 
@@ -100,49 +98,23 @@ const seeded = seedPuzzlesIfEmpty(db);
 process.stdout.write(`🎮 ${fmt('bold', 'Emoji Decryption')} — CLI Harness\n`);
 process.stdout.write(fmt('dim', `   ${seeded} puzzles loaded. Type guesses at the prompt. Ctrl+C to quit.\n\n`));
 
-const SESSION_ID = `harness-${Date.now()}`;
 let roundActive = false;
+let rl!: readline.Interface;
 
-const session = new GameSession(
-  db,
-  SESSION_ID,
-  (event) => {
-    rl.pause();
-    display(event);
-    if (event.type === 'round_end') {
-      roundActive = false;
-      process.stdout.write(fmt('dim', '\nNext round in 3 s…\n'));
-      setTimeout(startNextRound, 3_000);
-    }
-    if (roundActive) rl.prompt(true);
-  },
-  Date.now(),
-);
-
-let roundNumber = 0;
-let tickTimer: ReturnType<typeof setInterval> | null = null;
-
-function startNextRound(): void {
-  const puzzle = pickWeightedRandomPuzzle(db);
-  if (!puzzle) {
-    process.stdout.write(fmt('red', 'No puzzles available — exiting.\n'));
-    cleanup();
-    return;
+const loop = new GameLoop(db, `harness-${Date.now()}`, (event) => {
+  rl.pause();
+  display(event);
+  if (event.type === 'puzzle_reveal') roundActive = true;
+  if (event.type === 'round_end') {
+    roundActive = false;
+    process.stdout.write(fmt('dim', '\nNext round in 3 s…\n'));
   }
-  roundNumber++;
-  roundActive = true;
-  session.startRound(puzzle, roundNumber, Date.now());
-  rl.prompt(true);
-}
-
-// Tick every 250 ms so phase transitions fire within a quarter-second.
-tickTimer = setInterval(() => {
-  if (roundActive) session.tick(Date.now());
-}, 250);
+  if (roundActive) rl.prompt(true);
+}, { interRoundMs: 3_000 });
 
 // ─── readline ────────────────────────────────────────────────────────────────
 
-const rl = readline.createInterface({
+rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   prompt: fmt('dim', '> '),
@@ -162,13 +134,12 @@ rl.on('line', (line) => {
     text,
     receivedAt: Date.now(),
   };
-  session.processGuess(chatMsg, Date.now());
+  loop.processGuess(chatMsg, Date.now());
   rl.prompt(true);
 });
 
 function cleanup(): void {
-  if (tickTimer) clearInterval(tickTimer);
-  session.end(Date.now());
+  loop.stop();
   db.close();
   rl.close();
   process.exit(0);
@@ -180,5 +151,4 @@ process.on('SIGINT', () => {
   cleanup();
 });
 
-// Kick off the first round immediately.
-startNextRound();
+loop.start();

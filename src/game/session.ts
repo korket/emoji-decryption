@@ -2,7 +2,7 @@ import type { DB } from '../persistence/db';
 import type { Puzzle } from '../types/puzzle';
 import type { ChatMessage } from '../types/chat-message';
 import type { GameEvent } from '../types/events';
-import { RoundEngine } from './round';
+import { RoundEngine, computePhase, generateHint, phaseRemainingMs, TIMINGS } from './round';
 import { markPuzzleUsed } from '../persistence/puzzles';
 import { createSession, endSession, incrementSessionRounds } from '../persistence/sessions';
 import {
@@ -53,6 +53,40 @@ export class GameSession {
 
   getRoundState() {
     return this.engine.getState();
+  }
+
+  getSnapshot(now: number): GameEvent[] {
+    const roundState = this.engine.getState();
+    if (!roundState) return [];
+
+    const { puzzle, roundNumber, startedAt, guessers } = roundState;
+    const elapsed = now - startedAt;
+    const phase = computePhase(startedAt, now);
+    const events: GameEvent[] = [];
+
+    events.push({ type: 'puzzle_reveal', roundNumber, category: puzzle.category, emojis: puzzle.emojis });
+    events.push({ type: 'phase_change', phase, remainingMs: phaseRemainingMs(phase, startedAt, now) });
+
+    if (elapsed >= TIMINGS.OPEN_GUESSING_END) {
+      events.push({ type: 'hint_reveal', hintIndex: 1, revealedLetters: generateHint(puzzle.answer, 1) });
+    }
+    if (elapsed >= TIMINGS.HINT_1_END) {
+      events.push({ type: 'hint_reveal', hintIndex: 2, revealedLetters: generateHint(puzzle.answer, 2) });
+    }
+    if (phase === 'RESOLVE') {
+      const winners = [...guessers]
+        .sort((a, b) => b.points - a.points)
+        .map(({ userHandle, points }) => ({ userHandle, points }));
+      events.push({ type: 'round_end', answer: puzzle.answer, winners });
+    }
+
+    events.push({
+      type: 'leaderboard_update',
+      session: getSessionLeaderboard(this.db, this.sessionId),
+      weekly: getWeeklyLeaderboard(this.db, now),
+    });
+
+    return events;
   }
 
   private handleEvent(event: GameEvent): void {

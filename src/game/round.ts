@@ -65,7 +65,7 @@ export interface RoundState {
   guessers: GuesserRecord[];
 }
 
-function phaseRemainingMs(phase: Phase, startedAt: number, now: number): number {
+export function phaseRemainingMs(phase: Phase, startedAt: number, now: number): number {
   const end =
     phase === 'SCORING_WINDOW' ? startedAt + TIMINGS.SCORING_WINDOW_END
     : phase === 'OPEN_GUESSING' ? startedAt + TIMINGS.OPEN_GUESSING_END
