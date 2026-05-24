@@ -1,7 +1,11 @@
-import pino from 'pino';
+import { createServer } from './overlay-server/server.js';
 
-const log = pino({
-  transport: { target: 'pino-pretty', options: { colorize: true } },
-});
+const { fastify } = await createServer();
 
-log.info('emoji-decryption scaffold: ok');
+async function shutdown() {
+  await fastify.close();
+  process.exit(0);
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
