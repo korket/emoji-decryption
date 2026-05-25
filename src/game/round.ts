@@ -137,7 +137,6 @@ export class RoundEngine {
     if (s.guessers.some((g) => g.userId === msg.userId)) return;
 
     const result = matchAnswer(msg.text, s.puzzle.answer, s.puzzle.aliases);
-    console.log(`[guess] "${msg.text}" vs "${s.puzzle.answer}" → ${result.kind}`);
     if (result.kind === 'none') return;
 
     const elapsed = now - s.startedAt;

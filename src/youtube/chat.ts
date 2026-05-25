@@ -84,9 +84,7 @@ export class ChatPoller {
       if (!this.primed) {
         // First poll: discard historical messages, only capture the page token
         this.primed = true;
-        console.log(`Chat poller primed (${items.length} historical messages discarded)`);
       } else {
-        if (items.length > 0) console.log(`[chat] ${items.length} new message(s)`);
         const now = Date.now();
         for (const item of items) {
           const id = item.id;
@@ -98,8 +96,6 @@ export class ChatPoller {
             item.snippet?.textMessageDetails?.messageText;
           const userId = item.authorDetails?.channelId;
           const userHandle = item.authorDetails?.displayName;
-
-          console.log(`[chat] msg from ${userHandle ?? '?'}: "${text ?? '(no text)'}" userId=${userId ?? '?'}`);
 
           if (!text || !userId || !userHandle) continue;
 

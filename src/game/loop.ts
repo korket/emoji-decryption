@@ -73,6 +73,8 @@ export class GameLoop {
     this.onEvent(event);
     if (event.type === 'round_end') {
       const { interRoundMs = DEFAULT_INTER_ROUND_MS } = this.options;
+      const nextRoundAt = Date.now() + interRoundMs;
+      this.onEvent({ type: 'inter_round', answer: event.answer, winners: event.winners, nextRoundAt });
       this.roundTimer = setTimeout(() => this.startNextRound(), interRoundMs);
     }
   }

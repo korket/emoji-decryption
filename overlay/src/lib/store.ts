@@ -26,6 +26,12 @@ export interface WinnerFlash {
   rank: number;
 }
 
+export interface InterRoundDisplay {
+  answer: string;
+  winners: Array<{ userHandle: string; points: number }>;
+  nextRoundAt: number;
+}
+
 let _flashId = 0;
 
 export const round = writable<RoundDisplay | null>(null);
@@ -37,14 +43,17 @@ export const roundEndAnswer = writable<string | null>(null);
 export const recentWinners = writable<WinnerFlash[]>([]);
 export const connected = writable(false);
 export const preGame = writable<{ startsAt: number } | null>(null);
+export const interRound = writable<InterRoundDisplay | null>(null);
 
 function applyEvent(event: GameEvent): void {
   switch (event.type) {
     case 'pre_game':
       preGame.set({ startsAt: event.startsAt });
+      interRound.set(null);
       break;
     case 'puzzle_reveal':
       preGame.set(null);
+      interRound.set(null);
       round.set({ roundNumber: event.roundNumber, category: event.category, emojis: event.emojis });
       hint.set(null);
       hintTemplate.set(event.hintTemplate);
@@ -72,6 +81,11 @@ function applyEvent(event: GameEvent): void {
     case 'round_end':
       roundEndAnswer.set(event.answer);
       if (event.winners.length === 0) playSfx('round_end.mp3');
+      break;
+    case 'inter_round':
+      setTimeout(() => {
+        interRound.set({ answer: event.answer, winners: event.winners, nextRoundAt: event.nextRoundAt });
+      }, 3_000);
       break;
     case 'leaderboard_update':
       leaderboard.set(event.session);

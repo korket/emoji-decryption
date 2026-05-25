@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { flip } from 'svelte/animate';
-  import { connectWS, round, timer, hint, hintTemplate, leaderboard, roundEndAnswer, recentWinners, connected, preGame } from './lib/store';
+  import { connectWS, round, timer, hint, hintTemplate, leaderboard, roundEndAnswer, recentWinners, connected, preGame, interRound } from './lib/store';
   import { playSfx } from './lib/sfx';
 
   // Phase display labels and durations (ms) for timer bar fill calculation
@@ -57,6 +57,22 @@
 
   $: preGameRemainingSecs = Math.ceil(preGameRemaining / 1000);
 
+  let interRoundRemaining = 0;
+  let interRoundInterval: ReturnType<typeof setInterval> | null = null;
+
+  $: if ($interRound) {
+    if (interRoundInterval !== null) clearInterval(interRoundInterval);
+    interRoundRemaining = Math.max(0, $interRound.nextRoundAt - Date.now());
+    interRoundInterval = setInterval(() => {
+      if ($interRound) interRoundRemaining = Math.max(0, $interRound.nextRoundAt - Date.now());
+    }, 200);
+  } else if (interRoundInterval !== null) {
+    clearInterval(interRoundInterval);
+    interRoundInterval = null;
+  }
+
+  $: interRoundRemainingSecs = Math.ceil(interRoundRemaining / 1000);
+
   $: remainingSecs = Math.ceil(remaining / 1000);
   $: timerPct = $timer
     ? (remaining / (PHASE_DURATION[$timer.phase] ?? 10_000)) * 100
@@ -98,31 +114,73 @@
     return a;
   }
 
-  let bgmAudio: HTMLAudioElement | null = null;
+  const BGM_VOLUME = 0.3;
+  const FADE_MS = 3_000;
+
+  let bgmCurrent: HTMLAudioElement | null = null;
+  let bgmCrossfadeTimer: ReturnType<typeof setTimeout> | null = null;
   let bgmQueue: string[] = [];
   let bgmIndex = 0;
 
-  function playNextBgm() {
+  function getNextTrack(): string {
     if (bgmIndex >= bgmQueue.length) {
       bgmQueue = shuffle(BGM_TRACKS);
       bgmIndex = 0;
     }
-    const track = bgmQueue[bgmIndex++];
-    bgmAudio = new Audio(`/bgm/${encodeURIComponent(track)}`);
-    bgmAudio.volume = 0.3;
-    bgmAudio.addEventListener('ended', playNextBgm);
-    bgmAudio.play().catch(() => {});
+    return bgmQueue[bgmIndex++];
+  }
+
+  function rampVolume(el: HTMLAudioElement, to: number, ms: number, onDone?: () => void): void {
+    const from = el.volume;
+    const steps = Math.max(1, Math.round(ms / 50));
+    const delta = (to - from) / steps;
+    let step = 0;
+    const id = setInterval(() => {
+      step++;
+      el.volume = Math.max(0, Math.min(1, from + delta * step));
+      if (step >= steps) { clearInterval(id); onDone?.(); }
+    }, 50);
+  }
+
+  function scheduleCrossfade(audio: HTMLAudioElement): void {
+    if (bgmCrossfadeTimer !== null) clearTimeout(bgmCrossfadeTimer);
+    const dur = audio.duration;
+    if (!isFinite(dur)) { audio.addEventListener('ended', () => startBgm(), { once: true }); return; }
+    const delay = Math.max(0, (dur - audio.currentTime - FADE_MS / 1000) * 1000);
+    bgmCrossfadeTimer = setTimeout(() => crossfadeTo(getNextTrack()), delay);
+  }
+
+  function crossfadeTo(track: string): void {
+    const incoming = new Audio(`/bgm/${encodeURIComponent(track)}`);
+    incoming.volume = 0;
+    const outgoing = bgmCurrent;
+    bgmCurrent = incoming;
+    incoming.addEventListener('loadedmetadata', () => scheduleCrossfade(incoming), { once: true });
+    incoming.play().catch(() => {});
+    rampVolume(incoming, BGM_VOLUME, FADE_MS);
+    if (outgoing) rampVolume(outgoing, 0, FADE_MS, () => outgoing.pause());
+  }
+
+  function startBgm(): void {
+    const track = getNextTrack();
+    const audio = new Audio(`/bgm/${encodeURIComponent(track)}`);
+    audio.volume = BGM_VOLUME;
+    bgmCurrent = audio;
+    audio.addEventListener('loadedmetadata', () => scheduleCrossfade(audio), { once: true });
+    audio.play().catch(() => {});
   }
 
   onMount(() => {
     bgmQueue = shuffle(BGM_TRACKS);
-    playNextBgm();
+    startBgm();
 
     const disconnect = connectWS();
     return () => {
       if (timerInterval !== null) clearInterval(timerInterval);
       if (preGameInterval !== null) clearInterval(preGameInterval);
-      bgmAudio?.pause();
+      if (interRoundInterval !== null) clearInterval(interRoundInterval);
+      if (bgmCrossfadeTimer !== null) clearTimeout(bgmCrossfadeTimer);
+      bgmCurrent?.pause();
       disconnect();
     };
   });
@@ -138,7 +196,39 @@
     <div class="conn-badge">⚡ Connecting…</div>
   {/if}
 
-  {#if $round}
+  {#if $interRound}
+    <!-- ─── Inter-round screen ───────────────────── -->
+    <div class="interround" in:fade={{ duration: 400 }} out:fade={{ duration: 200 }}>
+      <div class="ir-round-label">Round {$round?.roundNumber} — RESULT</div>
+      <div class="ir-answer">{$interRound.answer}</div>
+      {#if $interRound.winners.length > 0}
+        <div class="ir-winners">
+          {#each $interRound.winners.slice(0, 3) as w, i}
+            <div class="ir-winner-row">
+              <span class="ir-medal">{medal(i + 1)}</span>
+              <span class="ir-name">{w.userHandle}</span>
+              <span class="ir-pts">+{w.points} pts</span>
+            </div>
+          {/each}
+        </div>
+      {:else}
+        <div class="ir-no-winner">Nobody guessed it!</div>
+      {/if}
+      <div class="ir-next">Next round in {interRoundRemainingSecs}s</div>
+      {#if $leaderboard.length > 0}
+        <div class="leaderboard ir-leaderboard" style="border-top-color: {theme.accent}">
+          <div class="lb-title" style="color: {theme.accent}">🏆 LEADERBOARD</div>
+          {#each $leaderboard as entry, i (entry.userHandle)}
+            <div class="lb-row" class:lb-top={i === 0}>
+              <span class="lb-rank">#{i + 1}</span>
+              <span class="lb-name">{entry.userHandle}</span>
+              <span class="lb-pts" style="color: {theme.accent}">{entry.points}</span>
+            </div>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {:else if $round}
     <!-- ─── Banner ──────────────────────────────── -->
     <div class="banner" style="border-bottom-color: {theme.accent}">
       <span class="banner-text">TYPE YOUR GUESS IN CHAT</span>
@@ -509,6 +599,97 @@
     color: #f59e0b;
     font-variant-numeric: tabular-nums;
     flex-shrink: 0;
+  }
+
+  .interround {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    background: rgba(10, 10, 16, 0.96);
+    padding: 40px;
+  }
+
+  .ir-round-label {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+
+  .ir-answer {
+    font-size: 88px;
+    font-weight: 900;
+    color: #bbf7d0;
+    text-align: center;
+    text-shadow: 0 0 36px rgba(187, 247, 208, 0.65), 0 4px 12px rgba(0, 0, 0, 0.6);
+    letter-spacing: 4px;
+    animation: reveal-entrance 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .ir-winners {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .ir-winner-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 14px 28px;
+  }
+
+  .ir-medal {
+    font-size: 40px;
+    flex-shrink: 0;
+  }
+
+  .ir-name {
+    flex: 1;
+    font-size: 36px;
+    font-weight: 700;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ir-pts {
+    font-size: 32px;
+    font-weight: 900;
+    color: #4ade80;
+    flex-shrink: 0;
+  }
+
+  .ir-no-winner {
+    font-size: 38px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 2px;
+  }
+
+  .ir-next {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #475569;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ir-leaderboard {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 16px 28px 20px;
   }
 
   .waiting {

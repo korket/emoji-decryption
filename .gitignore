@@ -47,3 +47,6 @@ desktop.ini
 # Coverage / test artifacts
 coverage/
 .nyc_output/
+
+# Unused assets
+not_used/
