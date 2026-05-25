@@ -79,13 +79,26 @@
     : 0;
   $: phaseLabel = $timer ? (PHASE_LABEL[$timer.phase] ?? $timer.phase) : '';
 
+  const CATEGORY_LABEL: Record<string, string> = {
+    movies:     'MOVIES',
+    songs:      'SONGS',
+    tv:         'TV',
+    idioms:     'IDIOMS',
+    foods:      'FOODS',
+    places:     'PLACES',
+    sports:     'SPORTS',
+    videogames: 'VIDEO GAMES',
+  };
+
   const CATEGORY_THEME: Record<string, { bg: string; accent: string }> = {
-    movies: { bg: 'rgba(220, 130, 130, 0.45)', accent: '#fca5a5' },  // dusty rose
-    songs:  { bg: 'rgba(180, 140, 230, 0.45)', accent: '#d8b4fe' },  // soft lavender
-    tv:     { bg: 'rgba(100, 195, 215, 0.40)', accent: '#67e8f9' },  // soft cyan
-    idioms: { bg: 'rgba(120, 200, 145, 0.40)', accent: '#86efac' },  // soft mint
-    foods:  { bg: 'rgba(240, 165, 100, 0.40)', accent: '#fdba74' },  // soft peach
-    places: { bg: 'rgba(120, 160, 235, 0.40)', accent: '#93c5fd' },  // soft periwinkle
+    movies:     { bg: 'rgba(220, 130, 130, 0.45)', accent: '#fca5a5' },  // dusty rose
+    songs:      { bg: 'rgba(180, 140, 230, 0.45)', accent: '#d8b4fe' },  // soft lavender
+    tv:         { bg: 'rgba(100, 195, 215, 0.40)', accent: '#67e8f9' },  // soft cyan
+    idioms:     { bg: 'rgba(120, 200, 145, 0.40)', accent: '#86efac' },  // soft mint
+    foods:      { bg: 'rgba(240, 165, 100, 0.40)', accent: '#fdba74' },  // soft peach
+    places:     { bg: 'rgba(120, 160, 235, 0.40)', accent: '#93c5fd' },  // soft periwinkle
+    sports:     { bg: 'rgba(220, 175, 40,  0.40)', accent: '#fde047' },  // golden yellow
+    videogames: { bg: 'rgba(130, 60,  220, 0.40)', accent: '#c084fc' },  // electric purple
   };
   const DEFAULT_THEME = { bg: 'rgba(0, 0, 0, 0.65)', accent: '#22c55e' };
 
@@ -256,7 +269,7 @@
     <div class="round-info">
       <span class="round-num">Round {$round.roundNumber}</span>
       <span class="round-sep">·</span>
-      <span class="round-cat" style="color: {theme.accent}">{$round.category.toUpperCase()}</span>
+      <span class="round-cat" style="color: {theme.accent}">{CATEGORY_LABEL[$round.category] ?? $round.category.toUpperCase()}</span>
     </div>
 
     <!-- ─── Emoji Hero ────────────────────────────── -->

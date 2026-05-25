@@ -54,7 +54,6 @@ const RoundEndEvent = z.object({
 const LeaderboardUpdateEvent = z.object({
   type: z.literal('leaderboard_update'),
   session: z.array(LeaderboardEntry).max(5),
-  weekly: z.array(LeaderboardEntry).max(5),
 });
 
 const PreGameEvent = z.object({

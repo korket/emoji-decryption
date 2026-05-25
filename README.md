@@ -38,7 +38,7 @@ overlay/              Svelte frontend (OBS browser source)
     App.svelte        Main overlay UI
 bgm/                  Background music tracks (.mp3)
 sfx/                  Sound effects (.mp3)
-puzzles.json          Puzzle bank (135+ entries)
+puzzles.json          Puzzle bank (259 entries)
 ```
 
 ## Running locally

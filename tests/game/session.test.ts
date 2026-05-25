@@ -182,22 +182,46 @@ describe('GameSession — leaderboard_update emitted after round_end', () => {
   });
 });
 
-// ─── weekly leaderboard ──────────────────────────────────────────────────────
+// ─── per-user rate limiting ───────────────────────────────────────────────────
 
-describe('GameSession — weekly leaderboard in update', () => {
-  it('weekly leaderboard contains scores from this session', () => {
+describe('GameSession — per-user guess rate limiting', () => {
+  it('drops a repeat guess from the same user within 1 second', () => {
     const db = freshDB();
     const puzzle = titanic(db);
-    const { events, onEvent } = capture();
-    const gs = new GameSession(db, 's', onEvent, BASE);
+    const gs = new GameSession(db, 's', () => {}, BASE);
     gs.startRound(puzzle, 1, BASE);
-    gs.processGuess(msg('alice', 'Titanic'), BASE);
-    gs.tick(BASE + TIMINGS.HINT_2_END);
 
-    const lb = events.find((e) => e.type === 'leaderboard_update');
-    expect(lb).toMatchObject({
-      weekly: [{ userHandle: 'alice', points: 10 }],
-    });
+    gs.processGuess(msg('u1', 'wrong answer'), BASE);       // miss — sets cooldown
+    gs.processGuess(msg('u1', 'Titanic'), BASE + 500);      // within 1 s — dropped
+
+    expect(getSessionLeaderboard(db, 's')).toEqual([]);
+    db.close();
+  });
+
+  it('allows a guess from the same user after the cooldown expires', () => {
+    const db = freshDB();
+    const puzzle = titanic(db);
+    const gs = new GameSession(db, 's', () => {}, BASE);
+    gs.startRound(puzzle, 1, BASE);
+
+    gs.processGuess(msg('u1', 'wrong answer'), BASE);
+    gs.processGuess(msg('u1', 'Titanic'), BASE + 1_001);    // after 1 s — accepted
+
+    expect(getSessionLeaderboard(db, 's')).toEqual([{ userHandle: 'u1', points: 10 }]);
+    db.close();
+  });
+
+  it('does not rate-limit different users against each other', () => {
+    const db = freshDB();
+    const puzzle = titanic(db);
+    const gs = new GameSession(db, 's', () => {}, BASE);
+    gs.startRound(puzzle, 1, BASE);
+
+    gs.processGuess(msg('u1', 'wrong answer'), BASE);
+    gs.processGuess(msg('u2', 'Titanic'), BASE + 100);      // different user — not throttled
+
+    expect(getSessionLeaderboard(db, 's')).toEqual([{ userHandle: 'u2', points: 10 }]);
     db.close();
   });
 });
+

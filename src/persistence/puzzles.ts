@@ -74,13 +74,18 @@ export function computePuzzleWeight(lastUsed: number | null, now: number): numbe
 
 export interface PickPuzzleOptions {
   category?: Category;
+  excludeCategory?: Category;
   now?: number;
   random?: () => number;
 }
 
 export function pickWeightedRandomPuzzle(db: DB, opts: PickPuzzleOptions = {}): Puzzle | null {
-  const pool = getAllPuzzles(db, opts.category);
+  let pool = getAllPuzzles(db, opts.category);
   if (pool.length === 0) return null;
+  if (opts.excludeCategory) {
+    const filtered = pool.filter((p) => p.category !== opts.excludeCategory);
+    if (filtered.length > 0) pool = filtered;
+  }
   const now = opts.now ?? Date.now();
   const random = opts.random ?? Math.random;
   const weights = pool.map((p) => computePuzzleWeight(p.lastUsed, now));

@@ -23,11 +23,11 @@ describe('seedPuzzlesIfEmpty', () => {
     db.close();
   });
 
-  it('seeds cover all six categories', () => {
+  it('seeds cover all categories', () => {
     const db = openDatabase(':memory:');
     seedPuzzlesIfEmpty(db);
     const categories = new Set(getAllPuzzles(db).map((p) => p.category));
-    expect(categories).toEqual(new Set(['movies', 'songs', 'tv', 'idioms', 'foods', 'places']));
+    expect(categories).toEqual(new Set(['movies', 'songs', 'tv', 'idioms', 'foods', 'places', 'sports', 'videogames']));
     db.close();
   });
 });

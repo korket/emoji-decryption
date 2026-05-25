@@ -73,7 +73,11 @@ export async function createServer(opts: ServerOptions = {}) {
   const fastify = Fastify({ logger: true });
   await fastify.register(websocketPlugin);
 
-  fastify.get('/health', async () => ({ ok: true }));
+  fastify.get('/health', async () => ({
+    ok: true,
+    uptime: Math.floor(process.uptime()),
+    ...currentLoop.getStatus(),
+  }));
 
   fastify.get('/overlay', { websocket: true }, (socket) => {
     const client = socket as unknown as WsClient;

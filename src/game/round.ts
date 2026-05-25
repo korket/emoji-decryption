@@ -20,12 +20,12 @@ export function computePhase(startedAt: number, now: number): Phase {
   return 'RESOLVE';
 }
 
-// Points based on how many hints were revealed when the answer was guessed:
-// no hint (0–30 s): 10 pts  |  hint 1 (30–50 s): 5 pts  |  hint 2 (50–70 s): 3 pts
+// Points based on phase when the answer was guessed:
+// bonus window (0–10 s): 10 pts  |  open guessing (10–30 s): 5 pts  |  hints (30–70 s): 3 pts
 export function computePoints(elapsedMs: number): number {
   if (elapsedMs < 0 || elapsedMs >= TIMINGS.HINT_2_END) return 0;
-  if (elapsedMs < TIMINGS.OPEN_GUESSING_END) return 10;
-  if (elapsedMs < TIMINGS.HINT_1_END) return 5;
+  if (elapsedMs < TIMINGS.SCORING_WINDOW_END) return 10;
+  if (elapsedMs < TIMINGS.OPEN_GUESSING_END) return 5;
   return 3;
 }
 

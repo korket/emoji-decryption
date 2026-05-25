@@ -2,6 +2,7 @@ import type { DB } from '../persistence/db';
 import type { ChatMessage } from '../types/chat-message';
 import type { GameEvent } from '../types/events';
 import type { LeaderboardEntry } from '../types/score';
+import type { Category } from '../types/puzzle';
 import { GameSession } from './session';
 import { pickWeightedRandomPuzzle } from '../persistence/puzzles';
 import { getSessionLeaderboard } from '../persistence/scores';
@@ -28,6 +29,7 @@ export class GameLoop {
   private preGameEndsAt: number | null = null;
   private interRoundSnapshot: GameEvent[] | null = null;
   private sessionEndLeaderboard: LeaderboardEntry[] | null = null;
+  private lastCategory: Category | null = null;
 
   constructor(
     private readonly db: DB,
@@ -61,6 +63,10 @@ export class GameLoop {
     this.session?.processGuess(msg, now);
   }
 
+  getStatus(): { sessionId: string; round: number; active: boolean } {
+    return { sessionId: this.sessionId, round: this.roundNumber, active: this.active };
+  }
+
   getSnapshot(now: number): GameEvent[] {
     if (this.sessionEndLeaderboard !== null) {
       return [{ type: 'session_end', leaderboard: this.sessionEndLeaderboard }];
@@ -82,8 +88,11 @@ export class GameLoop {
       this.stop();
       return;
     }
-    const puzzle = pickWeightedRandomPuzzle(this.db);
+    const puzzle = pickWeightedRandomPuzzle(this.db,
+      this.lastCategory !== null ? { excludeCategory: this.lastCategory } : {},
+    );
     if (!puzzle) { this.stop(); return; }
+    this.lastCategory = puzzle.category;
     this.interRoundSnapshot = null;
     this.roundNumber++;
     this.session!.startRound(puzzle, this.roundNumber, Date.now());

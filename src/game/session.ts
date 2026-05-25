@@ -8,7 +8,6 @@ import { createSession, endSession, incrementSessionRounds } from '../persistenc
 import {
   recordScore,
   getSessionLeaderboard,
-  getWeeklyLeaderboard,
   purgeOldScores,
 } from '../persistence/scores';
 
@@ -18,6 +17,8 @@ export class GameSession {
   private engine: RoundEngine;
   private currentNow = 0;
   private currentRoundId: string | null = null;
+  private readonly lastGuessAt = new Map<string, number>();
+  private readonly GUESS_COOLDOWN_MS = 1_000;
 
   constructor(
     private readonly db: DB,
@@ -43,6 +44,9 @@ export class GameSession {
 
   processGuess(msg: ChatMessage, now: number): void {
     this.currentNow = now;
+    const last = this.lastGuessAt.get(msg.userId) ?? 0;
+    if (now - last < this.GUESS_COOLDOWN_MS) return;
+    this.lastGuessAt.set(msg.userId, now);
     this.engine.processGuess(msg, now);
   }
 
@@ -83,7 +87,6 @@ export class GameSession {
     events.push({
       type: 'leaderboard_update',
       session: getSessionLeaderboard(this.db, this.sessionId),
-      weekly: getWeeklyLeaderboard(this.db, now),
     });
 
     return events;
@@ -102,15 +105,13 @@ export class GameSession {
         timestamp: this.currentNow,
       });
       const session = getSessionLeaderboard(this.db, this.sessionId);
-      const weekly = getWeeklyLeaderboard(this.db, this.currentNow);
-      this.onEvent({ type: 'leaderboard_update', session, weekly });
+      this.onEvent({ type: 'leaderboard_update', session });
     }
 
     if (event.type === 'round_end') {
       incrementSessionRounds(this.db, this.sessionId);
       const session = getSessionLeaderboard(this.db, this.sessionId);
-      const weekly = getWeeklyLeaderboard(this.db, this.currentNow);
-      this.onEvent({ type: 'leaderboard_update', session, weekly });
+      this.onEvent({ type: 'leaderboard_update', session });
     }
   }
 }

@@ -63,17 +63,18 @@ describe('computePhase', () => {
 // ─── computePoints ───────────────────────────────────────────────────────────
 
 describe('computePoints — hint-based scoring', () => {
-  it('earns 10 pts before any hint (0–30 s)', () => {
+  it('earns 10 pts in the bonus window (0–10 s)', () => {
     expect(computePoints(0)).toBe(10);
-    expect(computePoints(TIMINGS.OPEN_GUESSING_END - 1)).toBe(10);
+    expect(computePoints(TIMINGS.SCORING_WINDOW_END - 1)).toBe(10);
   });
 
-  it('earns 5 pts after hint 1 (30–50 s)', () => {
-    expect(computePoints(TIMINGS.OPEN_GUESSING_END)).toBe(5);
-    expect(computePoints(TIMINGS.HINT_1_END - 1)).toBe(5);
+  it('earns 5 pts in open guessing (10–30 s)', () => {
+    expect(computePoints(TIMINGS.SCORING_WINDOW_END)).toBe(5);
+    expect(computePoints(TIMINGS.OPEN_GUESSING_END - 1)).toBe(5);
   });
 
-  it('earns 3 pts after hint 2 (50–70 s)', () => {
+  it('earns 3 pts after hint 1 or hint 2 (30–70 s)', () => {
+    expect(computePoints(TIMINGS.OPEN_GUESSING_END)).toBe(3);
     expect(computePoints(TIMINGS.HINT_1_END)).toBe(3);
     expect(computePoints(TIMINGS.HINT_2_END - 1)).toBe(3);
   });

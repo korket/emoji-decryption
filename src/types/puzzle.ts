@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const Category = z.enum(['movies', 'songs', 'tv', 'idioms', 'foods', 'places']);
+export const Category = z.enum(['movies', 'songs', 'tv', 'idioms', 'foods', 'places', 'sports', 'videogames']);
 export type Category = z.infer<typeof Category>;
 
 export const PuzzleInput = z.object({
