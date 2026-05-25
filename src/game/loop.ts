@@ -8,9 +8,12 @@ import { TIMINGS } from './round';
 const DEFAULT_INTER_ROUND_MS = TIMINGS.ROUND_END - TIMINGS.HINT_2_END; // 10 s
 
 export interface GameLoopOptions {
+  preGameMs?: number;
   interRoundMs?: number;
   tickIntervalMs?: number;
 }
+
+const DEFAULT_PRE_GAME_MS = 20_000;
 
 export class GameLoop {
   private session: GameSession | null = null;
@@ -18,6 +21,7 @@ export class GameLoop {
   private roundTimer: ReturnType<typeof setTimeout> | null = null;
   private roundNumber = 0;
   private active = false;
+  private preGameEndsAt: number | null = null;
 
   constructor(
     private readonly db: DB,
@@ -30,9 +34,14 @@ export class GameLoop {
     if (this.active) return;
     this.active = true;
     this.session = new GameSession(this.db, this.sessionId, (e) => this.handleEvent(e), Date.now());
-    const { tickIntervalMs = 250 } = this.options;
+    const { preGameMs = DEFAULT_PRE_GAME_MS, tickIntervalMs = 250 } = this.options;
     this.tickTimer = setInterval(() => this.session!.tick(Date.now()), tickIntervalMs);
-    this.startNextRound();
+    this.preGameEndsAt = Date.now() + preGameMs;
+    this.onEvent({ type: 'pre_game', startsAt: this.preGameEndsAt });
+    this.roundTimer = setTimeout(() => {
+      this.preGameEndsAt = null;
+      this.startNextRound();
+    }, preGameMs);
   }
 
   stop(): void {
@@ -47,6 +56,9 @@ export class GameLoop {
   }
 
   getSnapshot(now: number): GameEvent[] {
+    if (this.preGameEndsAt !== null && now < this.preGameEndsAt) {
+      return [{ type: 'pre_game', startsAt: this.preGameEndsAt }];
+    }
     return this.session?.getSnapshot(now) ?? [];
   }
 

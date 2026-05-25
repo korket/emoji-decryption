@@ -2,7 +2,7 @@ import type { DB } from '../persistence/db';
 import type { Puzzle } from '../types/puzzle';
 import type { ChatMessage } from '../types/chat-message';
 import type { GameEvent } from '../types/events';
-import { RoundEngine, computePhase, generateHint, phaseRemainingMs, TIMINGS } from './round';
+import { RoundEngine, computePhase, generateHint, generateBlankHint, phaseRemainingMs, TIMINGS } from './round';
 import { markPuzzleUsed } from '../persistence/puzzles';
 import { createSession, endSession, incrementSessionRounds } from '../persistence/sessions';
 import {
@@ -64,7 +64,7 @@ export class GameSession {
     const phase = computePhase(startedAt, now);
     const events: GameEvent[] = [];
 
-    events.push({ type: 'puzzle_reveal', roundNumber, category: puzzle.category, emojis: puzzle.emojis });
+    events.push({ type: 'puzzle_reveal', roundNumber, category: puzzle.category, emojis: puzzle.emojis, hintTemplate: generateBlankHint(puzzle.answer) });
     events.push({ type: 'phase_change', phase, remainingMs: phaseRemainingMs(phase, startedAt, now) });
 
     if (elapsed >= TIMINGS.OPEN_GUESSING_END) {
@@ -101,6 +101,9 @@ export class GameSession {
         points: event.points,
         timestamp: this.currentNow,
       });
+      const session = getSessionLeaderboard(this.db, this.sessionId);
+      const weekly = getWeeklyLeaderboard(this.db, this.currentNow);
+      this.onEvent({ type: 'leaderboard_update', session, weekly });
     }
 
     if (event.type === 'round_end') {

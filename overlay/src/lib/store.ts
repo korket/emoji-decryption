@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type { GameEvent } from '@shared/types/events';
+import { playSfx } from './sfx';
 
 export interface RoundDisplay {
   roundNumber: number;
@@ -30,24 +31,34 @@ let _flashId = 0;
 export const round = writable<RoundDisplay | null>(null);
 export const timer = writable<TimerState | null>(null);
 export const hint = writable<string | null>(null);
+export const hintTemplate = writable<string | null>(null);
 export const leaderboard = writable<LeaderboardEntry[]>([]);
 export const roundEndAnswer = writable<string | null>(null);
 export const recentWinners = writable<WinnerFlash[]>([]);
 export const connected = writable(false);
+export const preGame = writable<{ startsAt: number } | null>(null);
 
 function applyEvent(event: GameEvent): void {
   switch (event.type) {
+    case 'pre_game':
+      preGame.set({ startsAt: event.startsAt });
+      break;
     case 'puzzle_reveal':
+      preGame.set(null);
       round.set({ roundNumber: event.roundNumber, category: event.category, emojis: event.emojis });
       hint.set(null);
+      hintTemplate.set(event.hintTemplate);
       roundEndAnswer.set(null);
       recentWinners.set([]);
+      playSfx('round_start.mp3');
       break;
     case 'phase_change':
       timer.set({ phase: event.phase, remainingMs: event.remainingMs, updatedAt: Date.now() });
+      if (event.phase === 'OPEN_GUESSING') playSfx('phase_change.mp3');
       break;
     case 'hint_reveal':
       hint.set(event.revealedLetters);
+      playSfx('hint_reveal.mp3');
       break;
     case 'correct_guess': {
       const id = ++_flashId;
@@ -55,10 +66,12 @@ function applyEvent(event: GameEvent): void {
       setTimeout(() => {
         recentWinners.update((ws) => ws.filter((w) => w.id !== id));
       }, 3_000);
+      playSfx('correct_guess.mp3');
       break;
     }
     case 'round_end':
       roundEndAnswer.set(event.answer);
+      if (event.winners.length === 0) playSfx('round_end.mp3');
       break;
     case 'leaderboard_update':
       leaderboard.set(event.session);

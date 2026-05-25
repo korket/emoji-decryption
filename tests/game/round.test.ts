@@ -62,52 +62,28 @@ describe('computePhase', () => {
 
 // ─── computePoints ───────────────────────────────────────────────────────────
 
-describe('computePoints — first winner', () => {
-  it('earns 10 pts in the first 2 s', () => {
-    expect(computePoints(0, true)).toBe(10);
-    expect(computePoints(1_999, true)).toBe(10);
+describe('computePoints — hint-based scoring', () => {
+  it('earns 10 pts before any hint (0–30 s)', () => {
+    expect(computePoints(0)).toBe(10);
+    expect(computePoints(TIMINGS.OPEN_GUESSING_END - 1)).toBe(10);
   });
 
-  it('earns 8 pts at 2 s', () => {
-    expect(computePoints(2_000, true)).toBe(8);
-    expect(computePoints(3_999, true)).toBe(8);
+  it('earns 5 pts after hint 1 (30–50 s)', () => {
+    expect(computePoints(TIMINGS.OPEN_GUESSING_END)).toBe(5);
+    expect(computePoints(TIMINGS.HINT_1_END - 1)).toBe(5);
   });
 
-  it('earns 6 pts at 4 s', () => {
-    expect(computePoints(4_000, true)).toBe(6);
+  it('earns 3 pts after hint 2 (50–70 s)', () => {
+    expect(computePoints(TIMINGS.HINT_1_END)).toBe(3);
+    expect(computePoints(TIMINGS.HINT_2_END - 1)).toBe(3);
   });
 
-  it('earns 4 pts at 6 s', () => {
-    expect(computePoints(6_000, true)).toBe(4);
-  });
-
-  it('earns 2 pts at 8 s (and stays 2 until window closes)', () => {
-    expect(computePoints(8_000, true)).toBe(2);
-    expect(computePoints(9_999, true)).toBe(2);
-  });
-
-  it('drops to 1 pt once the scoring window closes', () => {
-    expect(computePoints(TIMINGS.SCORING_WINDOW_END, true)).toBe(1);
-  });
-});
-
-describe('computePoints — all other guessers', () => {
-  it('always earns 1 pt inside the round', () => {
-    expect(computePoints(0, false)).toBe(1);
-    expect(computePoints(5_000, false)).toBe(1);
-    expect(computePoints(TIMINGS.OPEN_GUESSING_END, false)).toBe(1);
-    expect(computePoints(TIMINGS.HINT_1_END, false)).toBe(1);
-    expect(computePoints(TIMINGS.HINT_2_END - 1, false)).toBe(1);
-  });
-
-  it('earns 0 pts at RESOLVE', () => {
-    expect(computePoints(TIMINGS.HINT_2_END, false)).toBe(0);
-    expect(computePoints(TIMINGS.HINT_2_END, true)).toBe(0);
+  it('earns 0 pts at RESOLVE (≥70 s)', () => {
+    expect(computePoints(TIMINGS.HINT_2_END)).toBe(0);
   });
 
   it('earns 0 pts for negative elapsed', () => {
-    expect(computePoints(-1, false)).toBe(0);
-    expect(computePoints(-1, true)).toBe(0);
+    expect(computePoints(-1)).toBe(0);
   });
 });
 
@@ -238,17 +214,17 @@ describe('RoundEngine — processGuess', () => {
     expect(events[0]).toMatchObject({ type: 'correct_guess', userId: 'u1', points: 10, rank: 1 });
   });
 
-  it('first correct answer at 5 s earns 6 pts', () => {
+  it('first correct answer at 5 s earns 10 pts (no hint revealed yet)', () => {
     const { events, onEvent } = capture();
     const engine = new RoundEngine(onEvent);
     engine.start(puzzle(), 1, BASE);
     events.length = 0;
 
     engine.processGuess(msg('u1', 'Titanic'), BASE + 5_000);
-    expect(events[0]).toMatchObject({ type: 'correct_guess', points: 6 });
+    expect(events[0]).toMatchObject({ type: 'correct_guess', points: 10 });
   });
 
-  it('second correct answer earns 1 pt with rank 2', () => {
+  it('second guesser is blocked — round ends on first correct guess', () => {
     const { events, onEvent } = capture();
     const engine = new RoundEngine(onEvent);
     engine.start(puzzle(), 1, BASE);
@@ -257,7 +233,7 @@ describe('RoundEngine — processGuess', () => {
     events.length = 0;
 
     engine.processGuess(msg('u2', 'titanic'), BASE + 3_000);
-    expect(events[0]).toMatchObject({ type: 'correct_guess', userId: 'u2', points: 1, rank: 2 });
+    expect(events.filter((e) => e.type === 'correct_guess')).toHaveLength(0);
   });
 
   it('deduplicates — same user cannot score twice', () => {
@@ -320,25 +296,18 @@ describe('RoundEngine — processGuess', () => {
 });
 
 describe('RoundEngine — round_end winners', () => {
-  it('round_end contains winners sorted by points desc', () => {
+  it('round_end fires immediately on first correct guess with one winner', () => {
     const { events, onEvent } = capture();
     const engine = new RoundEngine(onEvent);
     engine.start(puzzle(), 1, BASE);
 
-    engine.processGuess(msg('u1', 'Titanic'), BASE);       // rank 1 → 10 pts
-    engine.processGuess(msg('u2', 'titanic'), BASE + 1_000); // rank 2 → 1 pt
-    engine.processGuess(msg('u3', 'titanic'), BASE + 2_000); // rank 3 → 1 pt
+    engine.processGuess(msg('u1', 'Titanic'), BASE); // first correct guess → ends round
 
-    engine.tick(BASE + TIMINGS.HINT_2_END);
     const re = events.find((e) => e.type === 'round_end');
     expect(re).toMatchObject({
       type: 'round_end',
       answer: 'Titanic',
-      winners: [
-        { userHandle: 'u1', points: 10 },
-        { userHandle: 'u2', points: 1 },
-        { userHandle: 'u3', points: 1 },
-      ],
+      winners: [{ userHandle: 'u1', points: 10 }],
     });
   });
 

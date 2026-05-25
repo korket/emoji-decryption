@@ -1,3 +1,4 @@
+import { rmSync } from 'fs';
 import Fastify from 'fastify';
 import websocketPlugin from '@fastify/websocket';
 import { openDatabase } from '../persistence/db';
@@ -20,6 +21,7 @@ export interface ServerOptions {
 export async function createServer(opts: ServerOptions = {}) {
   const { port = 3000, host = '127.0.0.1', dbPath = './game.db', interRoundMs } = opts;
 
+  rmSync(dbPath, { force: true });
   const db = openDatabase(dbPath);
   seedPuzzlesIfEmpty(db);
 

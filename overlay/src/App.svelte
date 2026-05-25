@@ -2,7 +2,8 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { flip } from 'svelte/animate';
-  import { connectWS, round, timer, hint, leaderboard, roundEndAnswer, recentWinners, connected } from './lib/store';
+  import { connectWS, round, timer, hint, hintTemplate, leaderboard, roundEndAnswer, recentWinners, connected, preGame } from './lib/store';
+  import { playSfx } from './lib/sfx';
 
   // Phase display labels and durations (ms) for timer bar fill calculation
   const PHASE_DURATION: Record<string, number> = {
@@ -33,22 +34,95 @@
     }, 50);
   }
 
+  let preGameRemaining = 0;
+  let preGameInterval: ReturnType<typeof setInterval> | null = null;
+
+  let _lastCountdownSec = -1;
+
+  $: if ($preGame) {
+    if (preGameInterval !== null) clearInterval(preGameInterval);
+    preGameRemaining = Math.max(0, $preGame.startsAt - Date.now());
+    _lastCountdownSec = -1;
+    preGameInterval = setInterval(() => {
+      if ($preGame) {
+        preGameRemaining = Math.max(0, $preGame.startsAt - Date.now());
+        const sec = Math.ceil(preGameRemaining / 1000);
+        if (sec !== _lastCountdownSec && sec > 0) {
+          _lastCountdownSec = sec;
+          playSfx('countdown_tick.mp3', 0.5);
+        }
+      }
+    }, 200);
+  }
+
+  $: preGameRemainingSecs = Math.ceil(preGameRemaining / 1000);
+
   $: remainingSecs = Math.ceil(remaining / 1000);
   $: timerPct = $timer
     ? (remaining / (PHASE_DURATION[$timer.phase] ?? 10_000)) * 100
     : 0;
   $: phaseLabel = $timer ? (PHASE_LABEL[$timer.phase] ?? $timer.phase) : '';
 
-  // Color of timer bar based on phase
+  const CATEGORY_THEME: Record<string, { bg: string; accent: string }> = {
+    movies: { bg: 'rgba(220, 130, 130, 0.45)', accent: '#fca5a5' },  // dusty rose
+    songs:  { bg: 'rgba(180, 140, 230, 0.45)', accent: '#d8b4fe' },  // soft lavender
+    tv:     { bg: 'rgba(100, 195, 215, 0.40)', accent: '#67e8f9' },  // soft cyan
+    idioms: { bg: 'rgba(120, 200, 145, 0.40)', accent: '#86efac' },  // soft mint
+    foods:  { bg: 'rgba(240, 165, 100, 0.40)', accent: '#fdba74' },  // soft peach
+    places: { bg: 'rgba(120, 160, 235, 0.40)', accent: '#93c5fd' },  // soft periwinkle
+  };
+  const DEFAULT_THEME = { bg: 'rgba(0, 0, 0, 0.65)', accent: '#22c55e' };
+
+  $: theme = $round ? (CATEGORY_THEME[$round.category] ?? DEFAULT_THEME) : DEFAULT_THEME;
+
+  // Timer bar color — accent for normal guessing, fixed amber/red for special phases
   $: barColor =
-    $timer?.phase === 'SCORING_WINDOW' ? '#f59e0b'   // amber — bonus window
-    : $timer?.phase === 'RESOLVE'      ? '#ef4444'   // red — resolving
-    : '#22c55e';                                     // green — normal guessing
+    $timer?.phase === 'SCORING_WINDOW' ? '#f59e0b'
+    : $timer?.phase === 'RESOLVE'      ? '#ef4444'
+    : theme.accent;
+
+  // ─── BGM ────────────────────────────────────────────────────────────────────
+
+  const BGM_TRACKS = [
+    'Arrival.mp3', 'Blue.mp3', 'Camera.mp3', 'Favorite.mp3',
+    'Fire.mp3', 'Forgive.mp3', 'Funny.mp3', 'Glass.mp3',
+    'Night Walking.mp3', 'Over.mp3', 'Road  Trip.mp3', 'Stroll.mp3', 'Toy.mp3',
+  ];
+
+  function shuffle<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let bgmAudio: HTMLAudioElement | null = null;
+  let bgmQueue: string[] = [];
+  let bgmIndex = 0;
+
+  function playNextBgm() {
+    if (bgmIndex >= bgmQueue.length) {
+      bgmQueue = shuffle(BGM_TRACKS);
+      bgmIndex = 0;
+    }
+    const track = bgmQueue[bgmIndex++];
+    bgmAudio = new Audio(`/bgm/${encodeURIComponent(track)}`);
+    bgmAudio.volume = 0.3;
+    bgmAudio.addEventListener('ended', playNextBgm);
+    bgmAudio.play().catch(() => {});
+  }
 
   onMount(() => {
+    bgmQueue = shuffle(BGM_TRACKS);
+    playNextBgm();
+
     const disconnect = connectWS();
     return () => {
       if (timerInterval !== null) clearInterval(timerInterval);
+      if (preGameInterval !== null) clearInterval(preGameInterval);
+      bgmAudio?.pause();
       disconnect();
     };
   });
@@ -66,7 +140,7 @@
 
   {#if $round}
     <!-- ─── Banner ──────────────────────────────── -->
-    <div class="banner">
+    <div class="banner" style="border-bottom-color: {theme.accent}">
       <span class="banner-text">TYPE YOUR GUESS IN CHAT</span>
       <span class="banner-arrow">↓</span>
     </div>
@@ -75,11 +149,11 @@
     <div class="round-info">
       <span class="round-num">Round {$round.roundNumber}</span>
       <span class="round-sep">·</span>
-      <span class="round-cat">{$round.category.toUpperCase()}</span>
+      <span class="round-cat" style="color: {theme.accent}">{$round.category.toUpperCase()}</span>
     </div>
 
     <!-- ─── Emoji Hero ────────────────────────────── -->
-    <div class="emoji-hero">
+    <div class="emoji-hero" style="background: {theme.bg}">
       {#if $roundEndAnswer}
         <div class="answer-reveal">{$roundEndAnswer}</div>
         <div class="emoji-faded">{$round.emojis}</div>
@@ -107,8 +181,8 @@
       {#key $hint}
         {#if $hint}
           <span class="hint-text" in:fade={{ duration: 400 }}>{$hint}</span>
-        {:else}
-          <span class="hint-placeholder">﹏ ﹏ ﹏</span>
+        {:else if $hintTemplate}
+          <span class="hint-text hint-blank" in:fade={{ duration: 200 }}>{$hintTemplate}</span>
         {/if}
       {/key}
     </div>
@@ -130,17 +204,25 @@
 
     <!-- ─── Leaderboard ───────────────────────────── -->
     {#if $leaderboard.length > 0}
-      <div class="leaderboard">
-        <div class="lb-title">🏆 SESSION</div>
+      <div class="leaderboard" style="border-top-color: {theme.accent}">
+        <div class="lb-title" style="color: {theme.accent}">🏆 LEADERBOARD</div>
         {#each $leaderboard as entry, i (entry.userHandle)}
           <div class="lb-row" class:lb-top={i === 0} animate:flip={{ duration: 300 }}>
             <span class="lb-rank">#{i + 1}</span>
             <span class="lb-name">{entry.userHandle}</span>
-            <span class="lb-pts">{entry.points}</span>
+            <span class="lb-pts" style="color: {theme.accent}">{entry.points}</span>
           </div>
         {/each}
       </div>
     {/if}
+  {:else if $preGame}
+    <!-- ─── Pre-game countdown ───────────────────── -->
+    <div class="pregame">
+      <div class="pregame-title">🎮 EMOJI DECRYPTION</div>
+      <div class="pregame-label">STARTING IN</div>
+      <div class="pregame-secs">{preGameRemainingSecs}</div>
+      <div class="pregame-sub">TYPE YOUR ANSWERS IN CHAT</div>
+    </div>
   {:else}
     <!-- ─── Waiting state ─────────────────────────── -->
     <div class="waiting">
@@ -151,6 +233,8 @@
 </div>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
   :global(*) {
     box-sizing: border-box;
   }
@@ -167,8 +251,9 @@
     position: relative;
     width: 1080px;
     height: 1920px;
-    background: transparent;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(to bottom, #ffffff 1440px, rgba(15, 15, 20, 0.88) 1440px);
+    font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial,
+      'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -250,31 +335,39 @@
     justify-content: center;
     padding: 40px;
     min-height: 0;
+    transition: background 0.6s ease;
   }
 
   .emoji-main {
-    font-size: 160px;
+    font-size: 220px;
     line-height: 1.2;
-    letter-spacing: 12px;
+    letter-spacing: 24px;
+    text-indent: 24px; /* offset trailing letter-spacing so glyphs visually center */
     text-align: center;
-    filter: drop-shadow(0 0 24px rgba(245, 158, 11, 0.6));
+    width: 100%;
+    filter: drop-shadow(0 0 32px rgba(255, 255, 255, 0.8));
+    animation: emoji-entrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               emoji-float 3.5s ease-in-out 0.7s infinite;
   }
 
   .answer-reveal {
     font-size: 96px;
     font-weight: 900;
-    color: #4ade80;
+    color: #bbf7d0;
     text-align: center;
-    text-shadow: 0 0 32px rgba(74, 222, 128, 0.8);
+    text-shadow: 0 0 28px rgba(187, 247, 208, 0.7), 0 4px 12px rgba(0, 0, 0, 0.5);
     letter-spacing: 4px;
     margin-bottom: 20px;
-    animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation: reveal-entrance 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               reveal-glow 2.5s ease-in-out 0.55s infinite;
   }
 
   .emoji-faded {
-    font-size: 100px;
-    letter-spacing: 12px;
+    font-size: 140px;
+    letter-spacing: 24px;
+    text-indent: 24px;
     text-align: center;
+    width: 100%;
     opacity: 0.35;
   }
 
@@ -335,23 +428,25 @@
     font-size: 64px;
     font-weight: 700;
     letter-spacing: 16px;
-    color: #67e8f9;
-    font-family: 'Courier New', Courier, monospace;
+    text-indent: 16px;
+    color: rgba(255, 255, 255, 0.88);
+    font-family: 'Courier New', Courier, monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji';
+    width: 100%;
+    text-align: center;
   }
 
-  .hint-placeholder {
-    font-size: 40px;
-    color: rgba(255, 255, 255, 0.18);
-    letter-spacing: 20px;
+  .hint-blank {
+    color: rgba(255, 255, 255, 0.30);
   }
 
   .winner-flashes {
-    background: rgba(0, 0, 0, 0.72);
-    padding: 8px 40px;
+    position: absolute;
+    right: 40px;
+    bottom: 560px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    flex-shrink: 0;
+    align-items: flex-end;
+    gap: 8px;
   }
 
   .winner-flash {
@@ -359,10 +454,14 @@
     font-weight: 600;
     color: #4ade80;
     text-shadow: 0 0 12px rgba(74, 222, 128, 0.5);
+    background: rgba(0, 0, 0, 0.75);
+    padding: 8px 20px;
+    border-radius: 40px;
+    white-space: nowrap;
   }
 
   .leaderboard {
-    background: rgba(0, 0, 0, 0.82);
+    background: rgba(15, 15, 20, 0.88);
     border-top: 3px solid rgba(245, 158, 11, 0.5);
     padding: 16px 40px 20px;
     flex-shrink: 0;
@@ -431,6 +530,75 @@
     font-weight: 700;
     color: #94a3b8;
     letter-spacing: 3px;
+  }
+
+  .pregame {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.82);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+
+  .pregame-title {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #f59e0b;
+    text-shadow: 0 0 24px rgba(245, 158, 11, 0.4);
+  }
+
+  .pregame-label {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #94a3b8;
+  }
+
+  .pregame-secs {
+    font-size: 220px;
+    font-weight: 900;
+    line-height: 1;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 60px rgba(245, 158, 11, 0.7);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  .pregame-sub {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #475569;
+  }
+
+  @keyframes reveal-entrance {
+    0%   { opacity: 0; transform: scale(0.3) translateY(40px); filter: blur(12px); }
+    70%  { opacity: 1; transform: scale(1.06) translateY(-6px); filter: blur(0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+  }
+
+  @keyframes reveal-glow {
+    0%, 100% { text-shadow: 0 0 28px rgba(187, 247, 208, 0.7), 0 4px 12px rgba(0, 0, 0, 0.5); }
+    50%       { text-shadow: 0 0 52px rgba(187, 247, 208, 1.0), 0 6px 16px rgba(0, 0, 0, 0.5); }
+  }
+
+  @keyframes emoji-entrance {
+    0%   { opacity: 0; transform: scale(0.4) translateY(60px); }
+    65%  { opacity: 1; transform: scale(1.08) translateY(-12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes emoji-float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-18px); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.75; }
   }
 
   @keyframes bounce {

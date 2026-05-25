@@ -98,20 +98,19 @@ describe('GameSession — correct guess is persisted', () => {
     db.close();
   });
 
-  it('records multiple correct guesses with correct points', () => {
+  it('only first correct guess is recorded — subsequent guesses are blocked', () => {
     const db = freshDB();
     const puzzle = titanic(db);
     const gs = new GameSession(db, 's', () => {}, BASE);
     gs.startRound(puzzle, 1, BASE);
 
-    gs.processGuess(msg('u1', 'Titanic'), BASE);           // first → 10 pts
-    gs.processGuess(msg('u2', 'titanic'), BASE + 1_000);  // second → 1 pt
-    gs.processGuess(msg('u3', 'TITANIC'), BASE + 2_000);  // third → 1 pt
+    gs.processGuess(msg('u1', 'Titanic'), BASE);          // first → 10 pts, ends round
+    gs.processGuess(msg('u2', 'titanic'), BASE + 1_000);  // blocked
+    gs.processGuess(msg('u3', 'TITANIC'), BASE + 2_000);  // blocked
 
     const lb = getSessionLeaderboard(db, 's', 10);
+    expect(lb).toHaveLength(1);
     expect(lb[0]).toMatchObject({ userHandle: 'u1', points: 10 });
-    expect(lb[1]).toMatchObject({ points: 1 });
-    expect(lb[2]).toMatchObject({ points: 1 });
     db.close();
   });
 
@@ -138,10 +137,7 @@ describe('GameSession — leaderboard_update emitted after round_end', () => {
     const gs = new GameSession(db, 's', onEvent, BASE);
     gs.startRound(puzzle, 1, BASE);
 
-    gs.processGuess(msg('u1', 'Titanic'), BASE);
-    events.length = 0;
-
-    gs.tick(BASE + TIMINGS.HINT_2_END);
+    gs.processGuess(msg('u1', 'Titanic'), BASE); // triggers correct_guess + round_end + leaderboard_update
 
     const roundEnd = events.find((e) => e.type === 'round_end');
     const lb = events.find((e) => e.type === 'leaderboard_update');

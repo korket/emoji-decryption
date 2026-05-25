@@ -17,6 +17,7 @@ const PuzzleRevealEvent = z.object({
   roundNumber: z.number().int().positive(),
   category: Category,
   emojis: z.string(),
+  hintTemplate: z.string(),
 });
 
 const PhaseChangeEvent = z.object({
@@ -56,7 +57,13 @@ const LeaderboardUpdateEvent = z.object({
   weekly: z.array(LeaderboardEntry).max(5),
 });
 
+const PreGameEvent = z.object({
+  type: z.literal('pre_game'),
+  startsAt: z.number().int(), // Unix ms timestamp when the first round begins
+});
+
 export const GameEvent = z.discriminatedUnion('type', [
+  PreGameEvent,
   PuzzleRevealEvent,
   PhaseChangeEvent,
   CorrectGuessEvent,
@@ -66,6 +73,7 @@ export const GameEvent = z.discriminatedUnion('type', [
 ]);
 export type GameEvent = z.infer<typeof GameEvent>;
 
+export type PreGameEvent = z.infer<typeof PreGameEvent>;
 export type PuzzleRevealEvent = z.infer<typeof PuzzleRevealEvent>;
 export type PhaseChangeEvent = z.infer<typeof PhaseChangeEvent>;
 export type CorrectGuessEvent = z.infer<typeof CorrectGuessEvent>;
