@@ -371,7 +371,7 @@
     position: relative;
     width: 1080px;
     height: 1920px;
-    background: linear-gradient(to bottom, #ffffff 1440px, rgba(15, 15, 20, 0.88) 1440px);
+    background: rgba(15, 15, 20, 0.88);
     font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial,
       'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
     color: #fff;
@@ -819,7 +819,6 @@
     align-items: center;
     justify-content: center;
     gap: 24px;
-    background: rgba(0, 0, 0, 0.65);
   }
 
   .waiting-emoji {
@@ -835,7 +834,6 @@
 
   .pregame {
     flex: 1;
-    background: rgba(0, 0, 0, 0.82);
     display: flex;
     flex-direction: column;
     align-items: center;
