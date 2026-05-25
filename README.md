@@ -54,12 +54,17 @@ cp .env.example .env
 # Authenticate with YouTube (first run only)
 npm run auth
 
-# Start backend
+# Start backend (idle; no countdown or rounds yet)
 npm start
 
 # Start overlay dev server (separate terminal)
 cd overlay && npm run dev
+
+# When OBS/YouTube are ready, start the game
+./start-game.bat
 ```
+
+The backend starts idle by default so you can prepare OBS and the stream first. `start-game.bat` calls `POST /game/start`, attaches to the active YouTube live chat, then starts the pre-game countdown. Use `stop-game.bat` to stop the current game and return the overlay to the waiting state.
 
 ## Running with pm2 (production)
 

@@ -53,6 +53,18 @@ export const sessionEnd = writable<SessionEndDisplay | null>(null);
 
 function applyEvent(event: GameEvent): void {
   switch (event.type) {
+    case 'game_idle':
+      preGame.set(null);
+      interRound.set(null);
+      sessionEnd.set(null);
+      round.set(null);
+      timer.set(null);
+      hint.set(null);
+      hintTemplate.set(null);
+      roundEndAnswer.set(null);
+      recentWinners.set([]);
+      leaderboard.set([]);
+      break;
     case 'pre_game':
       preGame.set({ startsAt: event.startsAt });
       interRound.set(null);

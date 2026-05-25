@@ -61,6 +61,10 @@ const PreGameEvent = z.object({
   startsAt: z.number().int(), // Unix ms timestamp when the first round begins
 });
 
+const GameIdleEvent = z.object({
+  type: z.literal('game_idle'),
+});
+
 const InterRoundEvent = z.object({
   type: z.literal('inter_round'),
   answer: z.string(),
@@ -75,6 +79,7 @@ const SessionEndEvent = z.object({
 });
 
 export const GameEvent = z.discriminatedUnion('type', [
+  GameIdleEvent,
   PreGameEvent,
   PuzzleRevealEvent,
   PhaseChangeEvent,
@@ -87,6 +92,7 @@ export const GameEvent = z.discriminatedUnion('type', [
 ]);
 export type GameEvent = z.infer<typeof GameEvent>;
 
+export type GameIdleEvent = z.infer<typeof GameIdleEvent>;
 export type PreGameEvent = z.infer<typeof PreGameEvent>;
 export type PuzzleRevealEvent = z.infer<typeof PuzzleRevealEvent>;
 export type PhaseChangeEvent = z.infer<typeof PhaseChangeEvent>;

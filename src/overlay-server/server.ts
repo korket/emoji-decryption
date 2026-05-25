@@ -11,6 +11,26 @@ interface WsClient {
   on(event: 'close', cb: () => void): void;
 }
 
+interface GameStartContext {
+  processGuess: (msg: ChatMessage, now: number) => void;
+}
+
+interface LoopStatus {
+  sessionId: string | null;
+  round: number;
+  active: boolean;
+  restartScheduled: boolean;
+}
+
+interface GameControlResult {
+  ok: boolean;
+  started?: boolean;
+  stopped?: boolean;
+  alreadyRunning?: boolean;
+  error?: string;
+  status: LoopStatus;
+}
+
 export interface ServerOptions {
   port?: number;
   host?: string;
@@ -19,6 +39,10 @@ export interface ServerOptions {
   interRoundMs?: number;
   maxRounds?: number;
   restartDelayMs?: number;
+  autoStart?: boolean;
+  beforeGameStart?: () => void | Promise<void>;
+  afterGameStart?: (ctx: GameStartContext) => void | Promise<void>;
+  onGameStop?: () => void | Promise<void>;
 }
 
 const DEFAULT_RESTART_DELAY_MS = 10_000;
@@ -32,6 +56,10 @@ export async function createServer(opts: ServerOptions = {}) {
     interRoundMs,
     maxRounds,
     restartDelayMs = DEFAULT_RESTART_DELAY_MS,
+    autoStart = false,
+    beforeGameStart,
+    afterGameStart,
+    onGameStop,
   } = opts;
 
   const db = openDatabase(dbPath);
@@ -54,9 +82,80 @@ export async function createServer(opts: ServerOptions = {}) {
     return o;
   }
 
-  let currentLoop: GameLoop;
+  let currentLoop: GameLoop | null = null;
   let restartTimer: ReturnType<typeof setTimeout> | null = null;
-  let enrichedSessionEnd: { type: 'session_end'; leaderboard: Array<{ userHandle: string; points: number }>; nextSessionAt: number } | null = null;
+  let enrichedSessionEnd: Extract<GameEvent, { type: 'session_end' }> | null = null;
+
+  function getLoopStatus(): LoopStatus {
+    const status = currentLoop?.getStatus();
+    return {
+      sessionId: status?.sessionId ?? null,
+      round: status?.round ?? 0,
+      active: status?.active ?? false,
+      restartScheduled: restartTimer !== null,
+    };
+  }
+
+  function clearRestartTimer(): void {
+    if (restartTimer !== null) {
+      clearTimeout(restartTimer);
+      restartTimer = null;
+    }
+  }
+
+  function processGuess(msg: ChatMessage, now: number): void {
+    currentLoop?.processGuess(msg, now);
+  }
+
+  function startLoop(includePreGame: boolean): void {
+    currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts(includePreGame));
+    currentLoop.start();
+  }
+
+  async function startGame(includePreGame = true): Promise<GameControlResult> {
+    if (currentLoop?.getStatus().active) {
+      return { ok: true, started: false, alreadyRunning: true, status: getLoopStatus() };
+    }
+
+    clearRestartTimer();
+    enrichedSessionEnd = null;
+
+    try {
+      await beforeGameStart?.();
+      startLoop(includePreGame);
+      await afterGameStart?.({ processGuess });
+      return { ok: true, started: true, status: getLoopStatus() };
+    } catch (err) {
+      if (currentLoop?.getStatus().active) {
+        currentLoop.stop();
+        currentLoop = null;
+        broadcast({ type: 'game_idle' });
+      }
+      const error = err instanceof Error ? err.message : String(err);
+      return { ok: false, started: false, error, status: getLoopStatus() };
+    }
+  }
+
+  async function stopGame(): Promise<GameControlResult> {
+    const hadGameState = currentLoop !== null || restartTimer !== null || enrichedSessionEnd !== null;
+    clearRestartTimer();
+    enrichedSessionEnd = null;
+
+    if (currentLoop !== null) {
+      currentLoop.stop();
+      currentLoop = null;
+    }
+
+    try {
+      await onGameStop?.();
+    } catch (err) {
+      const error = err instanceof Error ? err.message : String(err);
+      return { ok: false, stopped: hadGameState, error, status: getLoopStatus() };
+    }
+
+    if (hadGameState) broadcast({ type: 'game_idle' });
+    return { ok: true, stopped: hadGameState, status: getLoopStatus() };
+  }
 
   function onEvent(event: GameEvent): void {
     if (event.type === 'session_end') {
@@ -66,15 +165,12 @@ export async function createServer(opts: ServerOptions = {}) {
       restartTimer = setTimeout(() => {
         enrichedSessionEnd = null;
         restartTimer = null;
-        currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts(false));
-        currentLoop.start();
+        startLoop(false);
       }, restartDelayMs);
       return;
     }
     broadcast(event);
   }
-
-  currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts(true));
 
   const fastify = Fastify({ logger: true });
   await fastify.register(websocketPlugin);
@@ -82,8 +178,20 @@ export async function createServer(opts: ServerOptions = {}) {
   fastify.get('/health', async () => ({
     ok: true,
     uptime: Math.floor(process.uptime()),
-    ...currentLoop.getStatus(),
+    ...getLoopStatus(),
   }));
+
+  fastify.post('/game/start', async (_request, reply) => {
+    const result = await startGame(true);
+    if (!result.ok) return reply.code(500).send(result);
+    return result;
+  });
+
+  fastify.post('/game/stop', async (_request, reply) => {
+    const result = await stopGame();
+    if (!result.ok) return reply.code(500).send(result);
+    return result;
+  });
 
   fastify.get('/overlay', { websocket: true }, (socket) => {
     const client = socket as unknown as WsClient;
@@ -91,7 +199,7 @@ export async function createServer(opts: ServerOptions = {}) {
 
     const snapshot = enrichedSessionEnd !== null
       ? [enrichedSessionEnd]
-      : currentLoop.getSnapshot(Date.now());
+      : currentLoop?.getSnapshot(Date.now()) ?? [];
     for (const event of snapshot) {
       try { client.send(JSON.stringify(event)); } catch { /* already closed */ }
     }
@@ -99,16 +207,19 @@ export async function createServer(opts: ServerOptions = {}) {
     client.on('close', () => { clients.delete(client); });
   });
 
-  currentLoop.start();
-
   await fastify.listen({ port, host });
+
+  if (autoStart) {
+    void startGame(true).then((result) => {
+      if (!result.ok) fastify.log.error({ err: result.error }, 'Auto-start failed');
+    });
+  }
 
   return {
     fastify,
-    processGuess: (msg: ChatMessage, now: number) => currentLoop.processGuess(msg, now),
-    stopCurrentLoop: () => {
-      if (restartTimer !== null) { clearTimeout(restartTimer); restartTimer = null; }
-      currentLoop.stop();
-    },
+    processGuess,
+    startGame: () => startGame(true),
+    stopGame,
+    stopCurrentLoop: stopGame,
   };
 }
