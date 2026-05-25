@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { flip } from 'svelte/animate';
-  import { connectWS, round, timer, hint, hintTemplate, leaderboard, roundEndAnswer, recentWinners, connected, preGame, interRound } from './lib/store';
+  import { connectWS, round, timer, hint, hintTemplate, leaderboard, roundEndAnswer, recentWinners, connected, preGame, interRound, sessionEnd } from './lib/store';
   import { playSfx } from './lib/sfx';
 
   // Phase display labels and durations (ms) for timer bar fill calculation
@@ -196,7 +196,24 @@
     <div class="conn-badge">⚡ Connecting…</div>
   {/if}
 
-  {#if $interRound}
+  {#if $sessionEnd}
+    <!-- ─── Session end screen ──────────────────── -->
+    <div class="session-end" in:fade={{ duration: 600 }}>
+      <div class="se-title">SESSION OVER!</div>
+      <div class="se-trophy">🏆</div>
+      <div class="se-subtitle">FINAL STANDINGS</div>
+      <div class="se-entries">
+        {#each $sessionEnd.leaderboard as entry, i}
+          <div class="se-row" class:se-top={i === 0}>
+            <span class="se-medal">{medal(i + 1)}</span>
+            <span class="se-name">{entry.userHandle}</span>
+            <span class="se-pts">{entry.points} pts</span>
+          </div>
+        {/each}
+      </div>
+      <div class="se-thanks">Thanks for playing! 👋</div>
+    </div>
+  {:else if $interRound}
     <!-- ─── Inter-round screen ───────────────────── -->
     <div class="interround" in:fade={{ duration: 400 }} out:fade={{ duration: 200 }}>
       <div class="ir-round-label">Round {$round?.roundNumber} — RESULT</div>
@@ -599,6 +616,96 @@
     color: #f59e0b;
     font-variant-numeric: tabular-nums;
     flex-shrink: 0;
+  }
+
+  .session-end {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    background: rgba(10, 10, 16, 0.98);
+    padding: 60px 40px;
+  }
+
+  .se-title {
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #f59e0b;
+    text-shadow: 0 0 36px rgba(245, 158, 11, 0.5);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .se-trophy {
+    font-size: 140px;
+    line-height: 1;
+    filter: drop-shadow(0 0 32px rgba(245, 158, 11, 0.6));
+    animation: emoji-float 3.5s ease-in-out infinite;
+  }
+
+  .se-subtitle {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: #64748b;
+  }
+
+  .se-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .se-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px 28px;
+  }
+
+  .se-row.se-top {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .se-medal {
+    font-size: 40px;
+    flex-shrink: 0;
+  }
+
+  .se-name {
+    flex: 1;
+    font-size: 38px;
+    font-weight: 700;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .se-row.se-top .se-name {
+    color: #fde68a;
+  }
+
+  .se-pts {
+    font-size: 34px;
+    font-weight: 900;
+    color: #f59e0b;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .se-thanks {
+    font-size: 40px;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 2px;
   }
 
   .interround {

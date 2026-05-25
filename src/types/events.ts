@@ -69,6 +69,11 @@ const InterRoundEvent = z.object({
   nextRoundAt: z.number().int(), // Unix ms timestamp when the next round begins
 });
 
+const SessionEndEvent = z.object({
+  type: z.literal('session_end'),
+  leaderboard: z.array(LeaderboardEntry),
+});
+
 export const GameEvent = z.discriminatedUnion('type', [
   PreGameEvent,
   PuzzleRevealEvent,
@@ -78,6 +83,7 @@ export const GameEvent = z.discriminatedUnion('type', [
   RoundEndEvent,
   LeaderboardUpdateEvent,
   InterRoundEvent,
+  SessionEndEvent,
 ]);
 export type GameEvent = z.infer<typeof GameEvent>;
 
@@ -89,3 +95,4 @@ export type HintRevealEvent = z.infer<typeof HintRevealEvent>;
 export type RoundEndEvent = z.infer<typeof RoundEndEvent>;
 export type LeaderboardUpdateEvent = z.infer<typeof LeaderboardUpdateEvent>;
 export type InterRoundEvent = z.infer<typeof InterRoundEvent>;
+export type SessionEndEvent = z.infer<typeof SessionEndEvent>;

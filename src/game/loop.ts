@@ -3,14 +3,17 @@ import type { ChatMessage } from '../types/chat-message';
 import type { GameEvent } from '../types/events';
 import { GameSession } from './session';
 import { pickWeightedRandomPuzzle } from '../persistence/puzzles';
+import { getSessionLeaderboard } from '../persistence/scores';
 import { TIMINGS } from './round';
 
 const DEFAULT_INTER_ROUND_MS = TIMINGS.ROUND_END - TIMINGS.HINT_2_END; // 10 s
+const DEFAULT_MAX_ROUNDS = 10;
 
 export interface GameLoopOptions {
   preGameMs?: number;
   interRoundMs?: number;
   tickIntervalMs?: number;
+  maxRounds?: number;
 }
 
 const DEFAULT_PRE_GAME_MS = 20_000;
@@ -63,6 +66,13 @@ export class GameLoop {
   }
 
   private startNextRound(): void {
+    const { maxRounds = DEFAULT_MAX_ROUNDS } = this.options;
+    if (this.roundNumber >= maxRounds) {
+      const leaderboard = getSessionLeaderboard(this.db, this.sessionId);
+      this.onEvent({ type: 'session_end', leaderboard });
+      this.stop();
+      return;
+    }
     const puzzle = pickWeightedRandomPuzzle(this.db);
     if (!puzzle) { this.stop(); return; }
     this.roundNumber++;

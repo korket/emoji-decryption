@@ -32,6 +32,10 @@ export interface InterRoundDisplay {
   nextRoundAt: number;
 }
 
+export interface SessionEndDisplay {
+  leaderboard: Array<{ userHandle: string; points: number }>;
+}
+
 let _flashId = 0;
 
 export const round = writable<RoundDisplay | null>(null);
@@ -44,12 +48,14 @@ export const recentWinners = writable<WinnerFlash[]>([]);
 export const connected = writable(false);
 export const preGame = writable<{ startsAt: number } | null>(null);
 export const interRound = writable<InterRoundDisplay | null>(null);
+export const sessionEnd = writable<SessionEndDisplay | null>(null);
 
 function applyEvent(event: GameEvent): void {
   switch (event.type) {
     case 'pre_game':
       preGame.set({ startsAt: event.startsAt });
       interRound.set(null);
+      sessionEnd.set(null);
       break;
     case 'puzzle_reveal':
       preGame.set(null);
@@ -89,6 +95,9 @@ function applyEvent(event: GameEvent): void {
       break;
     case 'leaderboard_update':
       leaderboard.set(event.session);
+      break;
+    case 'session_end':
+      sessionEnd.set({ leaderboard: event.leaderboard });
       break;
   }
 }
