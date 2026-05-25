@@ -39,6 +39,7 @@ export class ChatPoller {
   private pollTimeout: ReturnType<typeof setTimeout> | null = null;
   private seenIds = new Set<string>();
   private backoffMs = 2_000;
+  private refreshAttempted = false;
 
   constructor(
     private readonly auth: Auth.OAuth2Client,
@@ -121,7 +122,19 @@ export class ChatPoller {
     const reason = e.response?.data?.error?.errors?.[0]?.reason;
 
     if (status === 401) {
-      console.error('[chat] Auth token expired. Delete token.json and restart to re-authenticate.');
+      if (!this.refreshAttempted) {
+        this.refreshAttempted = true;
+        console.warn('[chat] Auth 401 — attempting token refresh...');
+        try {
+          await this.auth.getAccessToken();
+          this.schedule(1_000);
+        } catch {
+          console.error('[chat] Token refresh failed. Delete token.json and restart to re-authenticate.');
+          this.stop();
+        }
+        return;
+      }
+      console.error('[chat] Auth still failing after refresh. Delete token.json and restart to re-authenticate.');
       this.stop();
       return;
     }

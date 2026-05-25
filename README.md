@@ -48,6 +48,9 @@ puzzles.json          Puzzle bank (135+ entries)
 npm install
 cd overlay && npm install && cd ..
 
+# Configure (optional — defaults work out of the box)
+cp .env.example .env
+
 # Authenticate with YouTube (first run only)
 npm run auth
 
@@ -56,6 +59,25 @@ npm start
 
 # Start overlay dev server (separate terminal)
 cd overlay && npm run dev
+```
+
+## Running with pm2 (production)
+
+```bash
+npm install -g pm2
+
+# Start (auto-restarts on crash, logs to ./logs/)
+pm2 start ecosystem.config.cjs
+
+# View logs
+pm2 logs emoji-decryption
+
+# Stop
+pm2 stop emoji-decryption
+
+# Auto-start on system boot
+pm2 startup
+pm2 save
 ```
 
 ## OBS Setup

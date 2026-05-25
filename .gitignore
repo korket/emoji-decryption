@@ -50,3 +50,6 @@ coverage/
 
 # Unused assets
 not_used/
+
+# pm2 logs
+logs/

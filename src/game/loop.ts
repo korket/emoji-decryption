@@ -1,6 +1,7 @@
 import type { DB } from '../persistence/db';
 import type { ChatMessage } from '../types/chat-message';
 import type { GameEvent } from '../types/events';
+import type { LeaderboardEntry } from '../types/score';
 import { GameSession } from './session';
 import { pickWeightedRandomPuzzle } from '../persistence/puzzles';
 import { getSessionLeaderboard } from '../persistence/scores';
@@ -25,6 +26,8 @@ export class GameLoop {
   private roundNumber = 0;
   private active = false;
   private preGameEndsAt: number | null = null;
+  private interRoundSnapshot: GameEvent[] | null = null;
+  private sessionEndLeaderboard: LeaderboardEntry[] | null = null;
 
   constructor(
     private readonly db: DB,
@@ -59,6 +62,10 @@ export class GameLoop {
   }
 
   getSnapshot(now: number): GameEvent[] {
+    if (this.sessionEndLeaderboard !== null) {
+      return [{ type: 'session_end', leaderboard: this.sessionEndLeaderboard }];
+    }
+    if (this.interRoundSnapshot !== null) return this.interRoundSnapshot;
     if (this.preGameEndsAt !== null && now < this.preGameEndsAt) {
       return [{ type: 'pre_game', startsAt: this.preGameEndsAt }];
     }
@@ -69,12 +76,15 @@ export class GameLoop {
     const { maxRounds = DEFAULT_MAX_ROUNDS } = this.options;
     if (this.roundNumber >= maxRounds) {
       const leaderboard = getSessionLeaderboard(this.db, this.sessionId);
+      this.sessionEndLeaderboard = leaderboard;
+      this.interRoundSnapshot = null;
       this.onEvent({ type: 'session_end', leaderboard });
       this.stop();
       return;
     }
     const puzzle = pickWeightedRandomPuzzle(this.db);
     if (!puzzle) { this.stop(); return; }
+    this.interRoundSnapshot = null;
     this.roundNumber++;
     this.session!.startRound(puzzle, this.roundNumber, Date.now());
   }
@@ -84,7 +94,12 @@ export class GameLoop {
     if (event.type === 'round_end') {
       const { interRoundMs = DEFAULT_INTER_ROUND_MS } = this.options;
       const nextRoundAt = Date.now() + interRoundMs;
-      this.onEvent({ type: 'inter_round', answer: event.answer, winners: event.winners, nextRoundAt });
+      const interRoundEv: GameEvent = { type: 'inter_round', answer: event.answer, winners: event.winners, nextRoundAt };
+      this.onEvent(interRoundEv);
+      this.interRoundSnapshot = [
+        ...(this.session?.getSnapshot(Date.now()) ?? []),
+        interRoundEv,
+      ];
       this.roundTimer = setTimeout(() => this.startNextRound(), interRoundMs);
     }
   }
