@@ -43,7 +43,6 @@ export const timer = writable<TimerState | null>(null);
 export const hint = writable<string | null>(null);
 export const hintTemplate = writable<string | null>(null);
 export const leaderboard = writable<LeaderboardEntry[]>([]);
-export const weeklyLeaderboard = writable<LeaderboardEntry[]>([]);
 export const roundEndAnswer = writable<string | null>(null);
 export const recentWinners = writable<WinnerFlash[]>([]);
 export const connected = writable(false);
@@ -96,7 +95,6 @@ function applyEvent(event: GameEvent): void {
       break;
     case 'leaderboard_update':
       leaderboard.set(event.session);
-      weeklyLeaderboard.set(event.weekly);
       break;
     case 'session_end':
       sessionEnd.set({ leaderboard: event.leaderboard });

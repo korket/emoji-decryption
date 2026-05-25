@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
   import { flip } from 'svelte/animate';
-  import { connectWS, round, timer, hint, hintTemplate, leaderboard, weeklyLeaderboard, roundEndAnswer, recentWinners, connected, preGame, interRound, sessionEnd } from './lib/store';
+  import { connectWS, round, timer, hint, hintTemplate, leaderboard, roundEndAnswer, recentWinners, connected, preGame, interRound, sessionEnd } from './lib/store';
   import { playSfx } from './lib/sfx';
 
   // Phase display labels and durations (ms) for timer bar fill calculation
@@ -312,7 +312,7 @@
     <!-- ─── Leaderboard ───────────────────────────── -->
     {#if $leaderboard.length > 0}
       <div class="leaderboard" style="border-top-color: {theme.accent}">
-        <div class="lb-title" style="color: {theme.accent}">🏆 SESSION</div>
+        <div class="lb-title" style="color: {theme.accent}">🏆 LEADERBOARD</div>
         {#each $leaderboard as entry, i (entry.userHandle)}
           <div class="lb-row" class:lb-top={i === 0} animate:flip={{ duration: 300 }}>
             <span class="lb-rank">#{i + 1}</span>
@@ -320,16 +320,6 @@
             <span class="lb-pts" style="color: {theme.accent}">{entry.points}</span>
           </div>
         {/each}
-        {#if $weeklyLeaderboard.length > 0}
-          <div class="lb-weekly-title">📅 THIS WEEK</div>
-          {#each $weeklyLeaderboard.slice(0, 3) as entry, i (entry.userHandle)}
-            <div class="lb-row lb-weekly" animate:flip={{ duration: 300 }}>
-              <span class="lb-rank">#{i + 1}</span>
-              <span class="lb-name">{entry.userHandle}</span>
-              <span class="lb-pts lb-weekly-pts">{entry.points}</span>
-            </div>
-          {/each}
-        {/if}
       </div>
     {/if}
   {:else if $preGame}
@@ -592,15 +582,6 @@
     margin-bottom: 10px;
   }
 
-  .lb-weekly-title {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: #475569;
-    margin-top: 10px;
-    margin-bottom: 4px;
-  }
-
   .lb-row {
     display: flex;
     align-items: center;
@@ -608,16 +589,6 @@
     padding: 8px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     font-size: 34px;
-  }
-
-  .lb-row.lb-weekly {
-    font-size: 26px;
-    padding: 5px 0;
-    opacity: 0.75;
-  }
-
-  .lb-pts.lb-weekly-pts {
-    color: #64748b;
   }
 
   .lb-row.lb-top .lb-name {
