@@ -1,6 +1,6 @@
-# emoji-decryption — Design Document
+# Emoguessr — Design Document
 
-**Project:** [github.com/korket/emoji-decryption](https://github.com/korket/emoji-decryption)
+**Project:** [github.com/korket/Emoguessr](https://github.com/korket/Emoguessr)
 **Operator:** korket
 **Document version:** 2026-05-24
 
@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-**emoji-decryption** is a fully-automated viewer-interactive game broadcast on YouTube Shorts Live. Emoji puzzles (e.g., `🧊🚢🥶` = "Titanic") appear on a vertical 9:16 video stream; viewers guess in YouTube live chat; the system fuzzy-matches each chat message against the canonical answer and awards points to correct guessers within a 10-second scoring window. An on-screen leaderboard updates throughout the broadcast.
+**Emoguessr** is a fully-automated viewer-interactive game broadcast on YouTube Shorts Live. Emoji puzzles (e.g., `🧊🚢🥶` = "Titanic") appear on a vertical 9:16 video stream; viewers guess in YouTube live chat; the system fuzzy-matches each chat message against the canonical answer and awards points to correct guessers within a 10-second scoring window. An on-screen leaderboard updates throughout the broadcast.
 
 The application is **single-tenant**: it runs locally on the operator's own machine to power the operator's own personal YouTube channel. It is not distributed to other users, not operated as a service, and not accessed by any third party.
 
@@ -188,6 +188,6 @@ Chat message **text content is not persisted**. Messages are evaluated by the ma
 
 ## 8. Repository
 
-Source code: [https://github.com/korket/emoji-decryption](https://github.com/korket/emoji-decryption)
+Source code: [https://github.com/korket/Emoguessr](https://github.com/korket/Emoguessr)
 
-This design document lives at: [https://github.com/korket/emoji-decryption/blob/main/DESIGN.md](https://github.com/korket/emoji-decryption/blob/main/DESIGN.md)
+This design document lives at: [https://github.com/korket/Emoguessr/blob/main/DESIGN.md](https://github.com/korket/Emoguessr/blob/main/DESIGN.md)

@@ -95,7 +95,7 @@ function display(event: GameEvent): void {
 
 const db = openDatabase(':memory:');
 const seeded = seedPuzzlesIfEmpty(db);
-process.stdout.write(`🎮 ${fmt('bold', 'Emoji Decryption')} — CLI Harness\n`);
+process.stdout.write(`🎮 ${fmt('bold', 'Emoguessr')} — CLI Harness\n`);
 process.stdout.write(fmt('dim', `   ${seeded} puzzles loaded. Type guesses at the prompt. Ctrl+C to quit.\n\n`));
 
 let roundActive = false;

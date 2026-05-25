@@ -21,7 +21,7 @@ export interface ServerOptions {
   restartDelayMs?: number;
 }
 
-const DEFAULT_RESTART_DELAY_MS = 30_000;
+const DEFAULT_RESTART_DELAY_MS = 10_000;
 
 export async function createServer(opts: ServerOptions = {}) {
   const {
@@ -46,9 +46,9 @@ export async function createServer(opts: ServerOptions = {}) {
     }
   }
 
-  function buildLoopOpts(): GameLoopOptions {
+  function buildLoopOpts(includePreGame: boolean): GameLoopOptions {
     const o: GameLoopOptions = {};
-    if (preGameMs !== undefined) o.preGameMs = preGameMs;
+    if (includePreGame && preGameMs !== undefined) o.preGameMs = preGameMs;
     if (interRoundMs !== undefined) o.interRoundMs = interRoundMs;
     if (maxRounds !== undefined) o.maxRounds = maxRounds;
     return o;
@@ -56,19 +56,25 @@ export async function createServer(opts: ServerOptions = {}) {
 
   let currentLoop: GameLoop;
   let restartTimer: ReturnType<typeof setTimeout> | null = null;
+  let enrichedSessionEnd: { type: 'session_end'; leaderboard: Array<{ userHandle: string; points: number }>; nextSessionAt: number } | null = null;
 
   function onEvent(event: GameEvent): void {
-    broadcast(event);
     if (event.type === 'session_end') {
+      const nextSessionAt = Date.now() + restartDelayMs;
+      enrichedSessionEnd = { ...event, nextSessionAt };
+      broadcast(enrichedSessionEnd);
       restartTimer = setTimeout(() => {
+        enrichedSessionEnd = null;
         restartTimer = null;
-        currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts());
+        currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts(false));
         currentLoop.start();
       }, restartDelayMs);
+      return;
     }
+    broadcast(event);
   }
 
-  currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts());
+  currentLoop = new GameLoop(db, `session-${Date.now()}`, onEvent, buildLoopOpts(true));
 
   const fastify = Fastify({ logger: true });
   await fastify.register(websocketPlugin);
@@ -83,7 +89,9 @@ export async function createServer(opts: ServerOptions = {}) {
     const client = socket as unknown as WsClient;
     clients.add(client);
 
-    const snapshot = currentLoop.getSnapshot(Date.now());
+    const snapshot = enrichedSessionEnd !== null
+      ? [enrichedSessionEnd]
+      : currentLoop.getSnapshot(Date.now());
     for (const event of snapshot) {
       try { client.send(JSON.stringify(event)); } catch { /* already closed */ }
     }

@@ -37,20 +37,12 @@
   let preGameRemaining = 0;
   let preGameInterval: ReturnType<typeof setInterval> | null = null;
 
-  let _lastCountdownSec = -1;
-
   $: if ($preGame) {
     if (preGameInterval !== null) clearInterval(preGameInterval);
     preGameRemaining = Math.max(0, $preGame.startsAt - Date.now());
-    _lastCountdownSec = -1;
     preGameInterval = setInterval(() => {
       if ($preGame) {
         preGameRemaining = Math.max(0, $preGame.startsAt - Date.now());
-        const sec = Math.ceil(preGameRemaining / 1000);
-        if (sec !== _lastCountdownSec && sec > 0) {
-          _lastCountdownSec = sec;
-          playSfx('countdown_tick.mp3', 0.5);
-        }
       }
     }, 200);
   }
@@ -73,6 +65,19 @@
 
   $: interRoundRemainingSecs = Math.ceil(interRoundRemaining / 1000);
 
+  let sessionEndRemaining = 0;
+  let sessionEndInterval: ReturnType<typeof setInterval> | null = null;
+
+  $: if ($sessionEnd) {
+    if (sessionEndInterval !== null) clearInterval(sessionEndInterval);
+    sessionEndRemaining = Math.max(0, $sessionEnd.nextSessionAt - Date.now());
+    sessionEndInterval = setInterval(() => {
+      if ($sessionEnd) sessionEndRemaining = Math.max(0, $sessionEnd.nextSessionAt - Date.now());
+    }, 200);
+  }
+
+  $: sessionEndRemainingSecs = Math.ceil(sessionEndRemaining / 1000);
+
   $: remainingSecs = Math.ceil(remaining / 1000);
   $: timerPct = $timer
     ? (remaining / (PHASE_DURATION[$timer.phase] ?? 10_000)) * 100
@@ -91,16 +96,16 @@
   };
 
   const CATEGORY_THEME: Record<string, { bg: string; accent: string }> = {
-    movies:     { bg: 'rgba(220, 130, 130, 0.45)', accent: '#fca5a5' },  // dusty rose
-    songs:      { bg: 'rgba(180, 140, 230, 0.45)', accent: '#d8b4fe' },  // soft lavender
-    tv:         { bg: 'rgba(100, 195, 215, 0.40)', accent: '#67e8f9' },  // soft cyan
-    idioms:     { bg: 'rgba(120, 200, 145, 0.40)', accent: '#86efac' },  // soft mint
-    foods:      { bg: 'rgba(240, 165, 100, 0.40)', accent: '#fdba74' },  // soft peach
-    places:     { bg: 'rgba(120, 160, 235, 0.40)', accent: '#93c5fd' },  // soft periwinkle
-    sports:     { bg: 'rgba(220, 175, 40,  0.40)', accent: '#fde047' },  // golden yellow
-    videogames: { bg: 'rgba(130, 60,  220, 0.40)', accent: '#c084fc' },  // electric purple
+    movies:     { bg: '#efc7c7', accent: '#fca5a5' },
+    songs:      { bg: '#ddcbf4', accent: '#d8b4fe' },
+    tv:         { bg: '#c1e7ef', accent: '#67e8f9' },
+    idioms:     { bg: '#c9e9d3', accent: '#86efac' },
+    foods:      { bg: '#f9dbc1', accent: '#fdba74' },
+    places:     { bg: '#c9d9f7', accent: '#93c5fd' },
+    sports:     { bg: '#f1dfa9', accent: '#fde047' },
+    videogames: { bg: '#cdb1f1', accent: '#c084fc' },
   };
-  const DEFAULT_THEME = { bg: 'rgba(0, 0, 0, 0.65)', accent: '#22c55e' };
+  const DEFAULT_THEME = { bg: '#595959', accent: '#22c55e' };
 
   $: theme = $round ? (CATEGORY_THEME[$round.category] ?? DEFAULT_THEME) : DEFAULT_THEME;
 
@@ -192,6 +197,7 @@
       if (timerInterval !== null) clearInterval(timerInterval);
       if (preGameInterval !== null) clearInterval(preGameInterval);
       if (interRoundInterval !== null) clearInterval(interRoundInterval);
+      if (sessionEndInterval !== null) clearInterval(sessionEndInterval);
       if (bgmCrossfadeTimer !== null) clearTimeout(bgmCrossfadeTimer);
       bgmCurrent?.pause();
       disconnect();
@@ -224,7 +230,7 @@
           </div>
         {/each}
       </div>
-      <div class="se-thanks">Thanks for playing! 👋</div>
+      <div class="se-next">NEW SESSION IN {sessionEndRemainingSecs}s</div>
     </div>
   {:else if $interRound}
     <!-- ─── Inter-round screen ───────────────────── -->
@@ -338,7 +344,7 @@
   {:else if $preGame}
     <!-- ─── Pre-game countdown ───────────────────── -->
     <div class="pregame">
-      <div class="pregame-title">🎮 EMOJI DECRYPTION</div>
+      <div class="pregame-title">EMOGUESSR</div>
       <div class="pregame-label">STARTING IN</div>
       <div class="pregame-secs">{preGameRemainingSecs}</div>
       <div class="pregame-sub">TYPE YOUR ANSWERS IN CHAT</div>
@@ -371,7 +377,7 @@
     position: relative;
     width: 1080px;
     height: 1920px;
-    background: rgba(15, 15, 20, 0.88);
+    background: #1a1a24;
     font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial,
       'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
     color: #fff;
@@ -384,7 +390,7 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    background: rgba(239, 68, 68, 0.85);
+    background: #ef4444;
     color: #fff;
     font-size: 24px;
     font-weight: 700;
@@ -394,7 +400,7 @@
   }
 
   .banner {
-    background: rgba(0, 0, 0, 0.82);
+    background: #111118;
     border-bottom: 4px solid #f59e0b;
     display: flex;
     align-items: center;
@@ -419,7 +425,7 @@
   }
 
   .round-info {
-    background: rgba(0, 0, 0, 0.70);
+    background: #1c1c28;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -448,7 +454,7 @@
 
   .emoji-hero {
     flex: 1;
-    background: rgba(0, 0, 0, 0.65);
+    background: #1e1e2a;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -492,7 +498,7 @@
   }
 
   .timer-section {
-    background: rgba(0, 0, 0, 0.80);
+    background: #111118;
     padding: 14px 40px 10px;
     flex-shrink: 0;
   }
@@ -500,7 +506,7 @@
   .timer-bar-track {
     width: 100%;
     height: 18px;
-    background: rgba(255, 255, 255, 0.12);
+    background: #252532;
     border-radius: 9px;
     overflow: hidden;
   }
@@ -533,7 +539,7 @@
   }
 
   .hint-row {
-    background: rgba(0, 0, 0, 0.75);
+    background: #111118;
     border-top: 2px solid rgba(255, 255, 255, 0.08);
     padding: 18px 40px;
     text-align: center;
@@ -574,14 +580,14 @@
     font-weight: 600;
     color: #4ade80;
     text-shadow: 0 0 12px rgba(74, 222, 128, 0.5);
-    background: rgba(0, 0, 0, 0.75);
+    background: #1a1a28;
     padding: 8px 20px;
     border-radius: 40px;
     white-space: nowrap;
   }
 
   .leaderboard {
-    background: rgba(15, 15, 20, 0.88);
+    background: #1a1a24;
     border-top: 3px solid rgba(245, 158, 11, 0.5);
     padding: 16px 40px 20px;
     flex-shrink: 0;
@@ -632,14 +638,17 @@
   }
 
   .session-end {
-    flex: 1;
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 32px;
-    background: rgba(10, 10, 16, 0.98);
-    padding: 60px 40px;
+    background: #0a0a10;
+    padding: 480px 40px;
+    overflow-y: auto;
+    text-align: center;
   }
 
   .se-title {
@@ -677,13 +686,13 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    background: rgba(255, 255, 255, 0.06);
+    background: #1e1e2c;
     border-radius: 16px;
     padding: 16px 28px;
   }
 
   .se-row.se-top {
-    background: rgba(245, 158, 11, 0.12);
+    background: #231b06;
     border: 1px solid rgba(245, 158, 11, 0.3);
   }
 
@@ -714,22 +723,26 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .se-thanks {
-    font-size: 40px;
+  .se-next {
+    font-size: 36px;
     font-weight: 700;
+    letter-spacing: 3px;
     color: #475569;
-    letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
   }
 
   .interround {
-    flex: 1;
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 28px;
-    background: rgba(10, 10, 16, 0.96);
-    padding: 40px;
+    background: #0d0d18;
+    padding: 480px 40px;
+    overflow-y: auto;
+    text-align: center;
   }
 
   .ir-round-label {
@@ -762,7 +775,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    background: rgba(255, 255, 255, 0.06);
+    background: #1e1e2c;
     border-radius: 16px;
     padding: 14px 28px;
   }
@@ -808,7 +821,7 @@
     width: 100%;
     max-width: 800px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.04);
+    background: #181826;
     padding: 16px 28px 20px;
   }
 
@@ -819,6 +832,8 @@
     align-items: center;
     justify-content: center;
     gap: 24px;
+    text-align: center;
+    padding-top: 480px;
   }
 
   .waiting-emoji {
@@ -839,6 +854,8 @@
     align-items: center;
     justify-content: center;
     gap: 32px;
+    text-align: center;
+    padding-top: 480px;
   }
 
   .pregame-title {

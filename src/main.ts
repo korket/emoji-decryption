@@ -15,7 +15,7 @@ const { fastify, processGuess, stopCurrentLoop } = await createServer({
   maxRounds:        envInt('MAX_ROUNDS',       10),
   preGameMs:        envInt('PRE_GAME_MS',      20_000),
   interRoundMs:     envInt('INTER_ROUND_MS',   10_000),
-  restartDelayMs:   envInt('RESTART_DELAY_MS', 30_000),
+  restartDelayMs:   envInt('RESTART_DELAY_MS', 10_000),
 });
 
 let poller: ChatPoller | null = null;

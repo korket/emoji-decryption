@@ -248,14 +248,14 @@ describe('RoundEngine — processGuess', () => {
     expect(events.length).toBe(before); // no new event
   });
 
-  it('accepts fuzzy guess (single typo)', () => {
+  it('rejects a misspelled guess', () => {
     const { events, onEvent } = capture();
     const engine = new RoundEngine(onEvent);
     engine.start(puzzle(), 1, BASE);
     events.length = 0;
 
     engine.processGuess(msg('u1', 'Titatnic'), BASE); // transposed letters
-    expect(events[0]).toMatchObject({ type: 'correct_guess' });
+    expect(events.filter((e) => e.type === 'correct_guess')).toHaveLength(0);
   });
 
   it('accepts alias', () => {

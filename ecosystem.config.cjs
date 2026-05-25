@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'emoji-decryption',
+      name: 'emoguessr',
       script: './node_modules/.bin/tsx',
       args: 'src/main.ts',
       watch: false,

@@ -1,4 +1,4 @@
-# emoji-decryption
+# Emoguessr
 
 A fully-automated YouTube Shorts Live game where viewers race to guess what emoji puzzles represent. Correct guesses score points within a 10-second bonus window; a live leaderboard shows the top players.
 
@@ -70,10 +70,10 @@ npm install -g pm2
 pm2 start ecosystem.config.cjs
 
 # View logs
-pm2 logs emoji-decryption
+pm2 logs emoguessr
 
 # Stop
-pm2 stop emoji-decryption
+pm2 stop emoguessr
 
 # Auto-start on system boot
 pm2 startup

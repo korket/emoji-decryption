@@ -34,6 +34,7 @@ export interface InterRoundDisplay {
 
 export interface SessionEndDisplay {
   leaderboard: Array<{ userHandle: string; points: number }>;
+  nextSessionAt: number;
 }
 
 let _flashId = 0;
@@ -60,6 +61,7 @@ function applyEvent(event: GameEvent): void {
     case 'puzzle_reveal':
       preGame.set(null);
       interRound.set(null);
+      sessionEnd.set(null);
       round.set({ roundNumber: event.roundNumber, category: event.category, emojis: event.emojis });
       hint.set(null);
       hintTemplate.set(event.hintTemplate);
@@ -97,7 +99,13 @@ function applyEvent(event: GameEvent): void {
       leaderboard.set(event.session);
       break;
     case 'session_end':
-      sessionEnd.set({ leaderboard: event.leaderboard });
+      sessionEnd.set({ leaderboard: event.leaderboard, nextSessionAt: event.nextSessionAt });
+      round.set(null);
+      timer.set(null);
+      hint.set(null);
+      hintTemplate.set(null);
+      interRound.set(null);
+      recentWinners.set([]);
       break;
   }
 }

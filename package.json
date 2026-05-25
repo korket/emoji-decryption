@@ -1,7 +1,7 @@
 {
-  "name": "emoji-decryption",
+  "name": "emoguessr",
   "version": "0.0.1",
-  "description": "Fully-automated YouTube Shorts Live emoji-decryption game",
+  "description": "Fully-automated YouTube Shorts Live Emoguessr game",
   "type": "module",
   "private": true,
   "engines": {
@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
+    "auth": "tsx src/cli/auth.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",

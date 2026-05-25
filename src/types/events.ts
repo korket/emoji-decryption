@@ -71,6 +71,7 @@ const InterRoundEvent = z.object({
 const SessionEndEvent = z.object({
   type: z.literal('session_end'),
   leaderboard: z.array(LeaderboardEntry),
+  nextSessionAt: z.number().int(),
 });
 
 export const GameEvent = z.discriminatedUnion('type', [

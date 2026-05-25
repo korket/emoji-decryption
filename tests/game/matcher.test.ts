@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalize, computeTolerance, matchAnswer } from '../../src/game/matcher';
+import { normalize, matchAnswer } from '../../src/game/matcher';
 
 describe('normalize', () => {
   it('lowercases', () => {
@@ -45,31 +45,12 @@ describe('normalize', () => {
   });
 });
 
-describe('computeTolerance', () => {
-  it('returns 0 for very short strings', () => {
-    expect(computeTolerance(0)).toBe(0);
-    expect(computeTolerance(1)).toBe(0);
-    expect(computeTolerance(2)).toBe(0);
-    expect(computeTolerance(3)).toBe(0);
-  });
-
-  it('returns 1 for medium strings (4-6)', () => {
-    expect(computeTolerance(4)).toBe(1);
-    expect(computeTolerance(6)).toBe(1);
-  });
-
-  it('returns 2 for long strings (>6)', () => {
-    expect(computeTolerance(7)).toBe(2);
-    expect(computeTolerance(20)).toBe(2);
-  });
-});
 
 describe('matchAnswer — exact', () => {
   it('matches canonical answer', () => {
     const r = matchAnswer('Titanic', 'Titanic');
     expect(r.kind).toBe('exact');
     expect(r.matchedAgainst).toBe('Titanic');
-    expect(r.distance).toBe(0);
   });
 
   it('is case insensitive', () => {
@@ -110,31 +91,18 @@ describe('matchAnswer — alias', () => {
   });
 });
 
-describe('matchAnswer — fuzzy', () => {
-  it('accepts a single typo on a 7-char answer', () => {
-    const r = matchAnswer('Titatnic', 'Titanic');
-    expect(r.kind).toBe('fuzzy');
-    expect(r.distance).toBe(1);
+describe('matchAnswer — spelling errors rejected', () => {
+  it('rejects a single typo', () => {
+    expect(matchAnswer('Titatnic', 'Titanic').kind).toBe('none');
+    expect(matchAnswer('muana', 'Moana').kind).toBe('none');
   });
 
-  it('accepts up to 2 typos on long answers', () => {
-    const r = matchAnswer('Stairwy to Heavn', 'Stairway to Heaven');
-    expect(r.kind).toBe('fuzzy');
-    expect(r.distance).toBeLessThanOrEqual(2);
+  it('rejects multiple typos', () => {
+    expect(matchAnswer('Stairwy to Heavn', 'Stairway to Heaven').kind).toBe('none');
   });
 
-  it('rejects 3+ typos even on long answers', () => {
-    const r = matchAnswer('Strwy te Hevn', 'Stairway to Heaven');
-    expect(r.kind).toBe('none');
-  });
-
-  it('rejects any typo on a 3-char answer', () => {
-    expect(matchAnswer('jws', 'Jaws').kind).toBe('none');
+  it('rejects any typo on short answers', () => {
     expect(matchAnswer('jasw', 'Jaws').kind).toBe('none');
-  });
-
-  it('rejects any typo on a 2-char answer', () => {
-    expect(matchAnswer('Up', 'Up').kind).toBe('exact');
     expect(matchAnswer('Op', 'Up').kind).toBe('none');
   });
 });
