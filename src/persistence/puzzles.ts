@@ -76,9 +76,16 @@ export interface PickPuzzleOptions {
   random?: () => number;
 }
 
+function getLeastUsedPool(pool: Puzzle[]): Puzzle[] {
+  const minUseCount = Math.min(...pool.map((p) => p.useCount));
+  return pool.filter((p) => p.useCount === minUseCount);
+}
+
 export function pickWeightedRandomPuzzle(db: DB, opts: PickPuzzleOptions = {}): Puzzle | null {
-  let pool = getAllPuzzles(db, opts.category);
-  if (pool.length === 0) return null;
+  const all = getAllPuzzles(db, opts.category);
+  if (all.length === 0) return null;
+
+  let pool = getLeastUsedPool(all);
   if (opts.excludeCategory) {
     const filtered = pool.filter((p) => p.category !== opts.excludeCategory);
     if (filtered.length > 0) pool = filtered;

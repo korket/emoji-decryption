@@ -123,21 +123,17 @@ describe('pickWeightedRandomPuzzle', () => {
     db.close();
   });
 
-  it('favors fresher puzzles via weighting', () => {
+  it('picks least-used puzzles before weighted repeats', () => {
     const db = fresh();
-    const stale = insertPuzzle(db, PuzzleInput.parse({ category: 'movies', emojis: '🦇👨', answer: 'Batman' }));
-    const fresh2 = insertPuzzle(db, PuzzleInput.parse({ category: 'movies', emojis: '🦁👑', answer: 'The Lion King' }));
+    const used = insertPuzzle(db, PuzzleInput.parse({ category: 'movies', emojis: '🦇👨', answer: 'Batman' }));
+    const unused = insertPuzzle(db, PuzzleInput.parse({ category: 'movies', emojis: '🦁👑', answer: 'The Lion King' }));
     const now = 100_000_000_000;
-    markPuzzleUsed(db, stale.id, now - 1000);
+    markPuzzleUsed(db, used.id, now - 1000);
 
-    let staleCount = 0;
-    let freshCount = 0;
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 20; i++) {
       const picked = pickWeightedRandomPuzzle(db, { now });
-      if (picked?.id === stale.id) staleCount++;
-      else if (picked?.id === fresh2.id) freshCount++;
+      expect(picked?.id).toBe(unused.id);
     }
-    expect(freshCount).toBeGreaterThan(staleCount * 3);
     db.close();
   });
 });

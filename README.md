@@ -13,6 +13,7 @@ Emoji puzzles (e.g. `🧊🚢🥶` = "Titanic") appear on stream. Viewers type g
 - **Hint 1 (30–50s):** first exact correct guess earns 3 pts; first letter of each word is revealed
 - **Hint 2 (50–70s):** first exact correct guess earns 3 pts; ~half the letters are revealed
 - If nobody guesses correctly, the answer is revealed at 70s; next puzzle starts after a 10s inter-round screen
+- Puzzle selection persists across sessions and uses the least-used puzzles first, so a puzzle will not repeat until every puzzle in the bank has been used the same number of times.
 
 ## Stack
 

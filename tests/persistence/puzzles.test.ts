@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { openDatabase } from '../../src/persistence/db';
-import { insertPuzzle, getAllPuzzles, computePuzzleWeight, pickWeightedRandomPuzzle } from '../../src/persistence/puzzles';
+import { insertPuzzle, getAllPuzzles, computePuzzleWeight, pickWeightedRandomPuzzle, markPuzzleUsed } from '../../src/persistence/puzzles';
 import { PuzzleInput } from '../../src/types/puzzle';
 
 const NOW = 2_000_000_000_000;
@@ -78,18 +78,44 @@ describe('pickWeightedRandomPuzzle', () => {
     db.close();
   });
 
-  it('favours high-weight puzzles using a controlled random', () => {
+  it('picks least-used puzzles before repeats', () => {
     const db = freshDB();
-    const recent = addPuzzle(db, 'movies', 'Recent');   // weight 0.1 after marking used
-    const fresh  = addPuzzle(db, 'movies', 'Fresh');    // weight 1.0 (never used)
+    const used1 = addPuzzle(db, 'movies', 'Used 1');
+    const used2 = addPuzzle(db, 'songs', 'Used 2');
+    const unused = addPuzzle(db, 'tv', 'Unused');
+    markPuzzleUsed(db, used1.id, NOW);
+    markPuzzleUsed(db, used2.id, NOW);
 
-    // Mark 'Recent' as used just now
-    db.prepare('UPDATE puzzles SET last_used = ? WHERE id = ?').run(NOW, recent.id);
+    for (let i = 0; i < 20; i++) {
+      const result = pickWeightedRandomPuzzle(db, { now: NOW, random: () => i / 20 });
+      expect(result?.id).toBe(unused.id);
+    }
+    db.close();
+  });
 
-    // A random value just below total weight picks 'Fresh' deterministically
-    // total = 0.1 + 1.0 = 1.1; r = 0.15 → skips recent (0.1), lands on fresh
+  it('least-used priority overrides category exclusion', () => {
+    const db = freshDB();
+    const onlyUnused = addPuzzle(db, 'movies', 'Only Unused');
+    const usedOtherCategory = addPuzzle(db, 'songs', 'Used Song');
+    markPuzzleUsed(db, usedOtherCategory.id, NOW);
+
+    const result = pickWeightedRandomPuzzle(db, { excludeCategory: 'movies' });
+
+    expect(result?.id).toBe(onlyUnused.id);
+    db.close();
+  });
+
+  it('favours less-recently-used puzzles within the same usage cycle', () => {
+    const db = freshDB();
+    const recent = addPuzzle(db, 'movies', 'Recent'); // weight 0.1 after marking used
+    const old = addPuzzle(db, 'movies', 'Old');       // weight 1.0 after old use
+
+    markPuzzleUsed(db, recent.id, NOW);
+    markPuzzleUsed(db, old.id, NOW - 10 * DAY);
+
+    // total = 0.1 + 1.0 = 1.1; r = 0.15 -> skips recent (0.1), lands on old
     const result = pickWeightedRandomPuzzle(db, { now: NOW, random: () => 0.15 / 1.1 });
-    expect(result?.id).toBe(fresh.id);
+    expect(result?.id).toBe(old.id);
     db.close();
   });
 

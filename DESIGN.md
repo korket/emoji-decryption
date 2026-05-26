@@ -17,6 +17,7 @@ The application is **single-tenant**: it runs locally on the operator's own mach
 - Scheduled 2-hour daily streams (not 24/7)
 - Fully automated, no streamer on camera
 - ~55 second average round; ~130 rounds per 2-hour block
+- Puzzle selection is persisted locally and favors the lowest `use_count`, preventing repeats until the available puzzle bank has been exhausted for that usage cycle.
 
 ---
 
