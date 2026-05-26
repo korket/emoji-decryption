@@ -10,7 +10,6 @@ interface PuzzleRow {
   category: string;
   emojis: string;
   answer: string;
-  aliases: string;
   difficulty: number;
   last_used: number | null;
   use_count: number;
@@ -22,7 +21,6 @@ function rowToPuzzle(row: PuzzleRow): Puzzle {
     category: row.category as Category,
     emojis: row.emojis,
     answer: row.answer,
-    aliases: JSON.parse(row.aliases) as string[],
     difficulty: row.difficulty,
     lastUsed: row.last_used,
     useCount: row.use_count,
@@ -31,14 +29,13 @@ function rowToPuzzle(row: PuzzleRow): Puzzle {
 
 export function insertPuzzle(db: DB, input: PuzzleInput): Puzzle {
   const stmt = db.prepare(`
-    INSERT INTO puzzles (category, emojis, answer, aliases, difficulty)
-    VALUES (@category, @emojis, @answer, @aliases, @difficulty)
+    INSERT INTO puzzles (category, emojis, answer, difficulty)
+    VALUES (@category, @emojis, @answer, @difficulty)
   `);
   const info = stmt.run({
     category: input.category,
     emojis: input.emojis,
     answer: input.answer,
-    aliases: JSON.stringify(input.aliases),
     difficulty: input.difficulty,
   });
   const id = Number(info.lastInsertRowid);

@@ -1,274 +1,1297 @@
 [
-  { "category": "movies", "emojis": "🧊🚢🥶", "answer": "Titanic" },
-  { "category": "movies", "emojis": "🦇👨", "answer": "Batman" },
-  { "category": "movies", "emojis": "🕷️👨", "answer": "Spider-Man", "aliases": ["spiderman", "spider man"] },
-  { "category": "movies", "emojis": "🦁👑", "answer": "The Lion King", "aliases": ["lion king"] },
-  { "category": "movies", "emojis": "❄️👑", "answer": "Frozen" },
-  { "category": "movies", "emojis": "🐠🔍", "answer": "Finding Nemo" },
-  { "category": "movies", "emojis": "🦖🏝️", "answer": "Jurassic Park" },
-  { "category": "movies", "emojis": "🦈🌊", "answer": "Jaws" },
-  { "category": "movies", "emojis": "⭐⚔️", "answer": "Star Wars", "aliases": ["starwars"] },
-  { "category": "movies", "emojis": "⚡👓🧙", "answer": "Harry Potter" },
-  { "category": "movies", "emojis": "🦸‍♂️🦸‍♀️🤝", "answer": "The Avengers", "aliases": ["avengers"] },
-  { "category": "movies", "emojis": "🤠🚀🧸", "answer": "Toy Story" },
-  { "category": "movies", "emojis": "🏠🎈🎈", "answer": "Up" },
-  { "category": "movies", "emojis": "👨‍👨‍👦🍝", "answer": "The Godfather", "aliases": ["godfather"] },
-  { "category": "movies", "emojis": "🚗👀", "answer": "Cars" },
-  { "category": "movies", "emojis": "🟢😤🧅", "answer": "Shrek" },
-  { "category": "movies", "emojis": "🏠😱👦", "answer": "Home Alone" },
-  { "category": "movies", "emojis": "🏃‍♂️🍫📦", "answer": "Forrest Gump" },
-  { "category": "movies", "emojis": "⚔️🏛️🦁", "answer": "Gladiator" },
-  { "category": "movies", "emojis": "🚀⏰🌌", "answer": "Interstellar" },
-  { "category": "movies", "emojis": "🌊👧🐚", "answer": "Moana" },
-  { "category": "movies", "emojis": "💀🎸🌸", "answer": "Coco" },
-  { "category": "movies", "emojis": "🧞‍♂️🪔✨", "answer": "Aladdin" },
-  { "category": "movies", "emojis": "🌹👸🦁", "answer": "Beauty and the Beast", "aliases": ["beauty and beast"] },
-  { "category": "movies", "emojis": "💊🟢🕶️", "answer": "The Matrix", "aliases": ["matrix"] },
-  { "category": "movies", "emojis": "💤🌀🏙️", "answer": "Inception" },
-  { "category": "movies", "emojis": "🐑🦋🤫", "answer": "The Silence of the Lambs", "aliases": ["silence of the lambs"] },
-  { "category": "movies", "emojis": "🐟🧠🌊", "answer": "Finding Dory" },
-  { "category": "movies", "emojis": "🐉💚🧝", "answer": "How to Train Your Dragon", "aliases": ["httyd"] },
-  { "category": "movies", "emojis": "🌪️👧🐕", "answer": "The Wizard of Oz", "aliases": ["wizard of oz"] },
-
-  { "category": "songs", "emojis": "🪜☁️", "answer": "Stairway to Heaven" },
-  { "category": "songs", "emojis": "🏨☀️🌴", "answer": "Hotel California" },
-  { "category": "songs", "emojis": "👑🎤🎹", "answer": "Bohemian Rhapsody" },
-  { "category": "songs", "emojis": "💭🕊️", "answer": "Imagine" },
-  { "category": "songs", "emojis": "📅⬅️", "answer": "Yesterday" },
-  { "category": "songs", "emojis": "👋📞", "answer": "Hello" },
-  { "category": "songs", "emojis": "🤷💃", "answer": "Shake It Off" },
-  { "category": "songs", "emojis": "🐌🌶️", "answer": "Despacito" },
-  { "category": "songs", "emojis": "🎲🌊", "answer": "Rolling in the Deep" },
-  { "category": "songs", "emojis": "💍👯‍♀️", "answer": "Single Ladies" },
-  { "category": "songs", "emojis": "🌃💡🕶️", "answer": "Blinding Lights" },
-  { "category": "songs", "emojis": "🏙️🕺✨", "answer": "Uptown Funk" },
-  { "category": "songs", "emojis": "🌙🧟🎵", "answer": "Thriller" },
-  { "category": "songs", "emojis": "🏠🌻🎸", "answer": "Sweet Home Alabama" },
-  { "category": "songs", "emojis": "👁️🐯", "answer": "Eye of the Tiger" },
-  { "category": "songs", "emojis": "🎹🎵🍺", "answer": "Piano Man" },
-  { "category": "songs", "emojis": "🌍🥁☔", "answer": "Africa" },
-  { "category": "songs", "emojis": "🌟🧱", "answer": "Wonderwall" },
-  { "category": "songs", "emojis": "🌹🔴💃", "answer": "Roxanne" },
-  { "category": "songs", "emojis": "🙌✌️🎵", "answer": "Let It Be" },
-  { "category": "songs", "emojis": "🙌✨🕊️", "answer": "Hallelujah" },
-  { "category": "songs", "emojis": "👃🧒💀", "answer": "Smells Like Teen Spirit" },
-  { "category": "songs", "emojis": "😊☀️👏", "answer": "Happy" },
-  { "category": "songs", "emojis": "🚫⏹️🎸", "answer": "Don't Stop Me Now" },
-  { "category": "songs", "emojis": "📐🫵", "answer": "Shape of You" },
-
-  { "category": "tv", "emojis": "👨‍🔬🧪💊", "answer": "Breaking Bad" },
-  { "category": "tv", "emojis": "⚔️👑🐉", "answer": "Game of Thrones", "aliases": ["got"] },
-  { "category": "tv", "emojis": "👽🚲🔦", "answer": "Stranger Things" },
-  { "category": "tv", "emojis": "☕👯‍♀️🛋️", "answer": "Friends" },
-  { "category": "tv", "emojis": "🏢📎", "answer": "The Office", "aliases": ["office"] },
-  { "category": "tv", "emojis": "🦑🎮💀", "answer": "Squid Game" },
-  { "category": "tv", "emojis": "👸👑🇬🇧", "answer": "The Crown", "aliases": ["crown"] },
-  { "category": "tv", "emojis": "🚶‍♂️🧟‍♂️", "answer": "The Walking Dead", "aliases": ["twd", "walking dead"] },
-  { "category": "tv", "emojis": "👨‍👩‍👧‍👦🟡🍩", "answer": "The Simpsons", "aliases": ["simpsons"] },
-  { "category": "tv", "emojis": "🤷‍♂️☕🗽", "answer": "Seinfeld" },
-  { "category": "tv", "emojis": "👩‍⚕️❤️‍🩹🏥", "answer": "Grey's Anatomy", "aliases": ["greys anatomy"] },
-  { "category": "tv", "emojis": "🏝️✈️❓", "answer": "Lost" },
-  { "category": "tv", "emojis": "🪖🧒💚", "answer": "The Mandalorian", "aliases": ["mandalorian", "mando"] },
-  { "category": "tv", "emojis": "🎩🔪🚬", "answer": "Peaky Blinders" },
-  { "category": "tv", "emojis": "💰🎭🏦", "answer": "Money Heist", "aliases": ["la casa de papel"] },
-  { "category": "tv", "emojis": "📱😰🖥️", "answer": "Black Mirror" },
-  { "category": "tv", "emojis": "💊🇨🇴🚔", "answer": "Narcos" },
-  { "category": "tv", "emojis": "🦸‍♂️😈💉", "answer": "The Boys", "aliases": ["boys"] },
-  { "category": "tv", "emojis": "💰👨‍👩‍👧‍👦📊", "answer": "Succession" },
-  { "category": "tv", "emojis": "☢️💥🏚️", "answer": "Chernobyl" },
-
-  { "category": "idioms", "emojis": "🌧️🐱🐶", "answer": "Raining cats and dogs", "aliases": ["its raining cats and dogs"] },
-  { "category": "idioms", "emojis": "🥚🥚🧺", "answer": "Don't put all your eggs in one basket", "aliases": ["all your eggs in one basket", "eggs in one basket"] },
-  { "category": "idioms", "emojis": "🦵💔", "answer": "Break a leg" },
-  { "category": "idioms", "emojis": "🔨🎯", "answer": "Hit the nail on the head", "aliases": ["nail on the head"] },
-  { "category": "idioms", "emojis": "🫘💧", "answer": "Spill the beans" },
-  { "category": "idioms", "emojis": "🐦🐦🪨", "answer": "Kill two birds with one stone", "aliases": ["two birds with one stone", "two birds one stone"] },
-  { "category": "idioms", "emojis": "🐦🌅🪱", "answer": "The early bird catches the worm", "aliases": ["early bird catches the worm", "early bird"] },
-  { "category": "idioms", "emojis": "💰💪🦵", "answer": "Cost an arm and a leg", "aliases": ["arm and a leg", "arm and leg"] },
-  { "category": "idioms", "emojis": "🦷🔫", "answer": "Bite the bullet" },
-  { "category": "idioms", "emojis": "🍰✅", "answer": "Piece of cake" },
-  { "category": "idioms", "emojis": "🌧️😷", "answer": "Under the weather" },
-  { "category": "idioms", "emojis": "👊🛏️", "answer": "Hit the sack" },
-  { "category": "idioms", "emojis": "🌕🔵", "answer": "Once in a blue moon" },
-  { "category": "idioms", "emojis": "🐱👜", "answer": "Let the cat out of the bag", "aliases": ["cat out of the bag"] },
-  { "category": "idioms", "emojis": "🔺🧊", "answer": "Tip of the iceberg", "aliases": ["the tip of the iceberg"] },
-  { "category": "idioms", "emojis": "🐕🌳❌", "answer": "Barking up the wrong tree", "aliases": ["bark up the wrong tree"] },
-  { "category": "idioms", "emojis": "🌉🔥", "answer": "Burning bridges", "aliases": ["burn bridges", "burn your bridges"] },
-  { "category": "idioms", "emojis": "🦵😂", "answer": "Pull someone's leg", "aliases": ["pulling my leg", "pulling your leg"] },
-  { "category": "idioms", "emojis": "💪📢", "answer": "Actions speak louder than words", "aliases": ["actions speak louder"] },
-  { "category": "idioms", "emojis": "😺🔍☠️", "answer": "Curiosity killed the cat" },
-
-  { "category": "foods", "emojis": "🇮🇹🍅🧀", "answer": "Pizza" },
-  { "category": "foods", "emojis": "🇯🇵🐟🍚", "answer": "Sushi" },
-  { "category": "foods", "emojis": "🐄🥩🍞", "answer": "Hamburger", "aliases": ["burger"] },
-  { "category": "foods", "emojis": "🇲🇽🌽🌶️", "answer": "Tacos", "aliases": ["taco"] },
-  { "category": "foods", "emojis": "🇫🇷🌙🥖", "answer": "Croissant" },
-  { "category": "foods", "emojis": "🍜🥚🌿", "answer": "Ramen" },
-  { "category": "foods", "emojis": "🌯🫘🌶️", "answer": "Burrito" },
-  { "category": "foods", "emojis": "💨🥢🥩", "answer": "Dumplings", "aliases": ["dumpling"] },
-  { "category": "foods", "emojis": "🍫❤️", "answer": "Chocolate" },
-  { "category": "foods", "emojis": "⭕🍞☕", "answer": "Donut", "aliases": ["doughnut", "donuts"] },
-  { "category": "foods", "emojis": "🌡️🐕", "answer": "Hot Dog", "aliases": ["hotdog"] },
-  { "category": "foods", "emojis": "🇮🇳🌶️🥘", "answer": "Curry" },
-  { "category": "foods", "emojis": "🧀🥚🍓", "answer": "Cheesecake" },
-  { "category": "foods", "emojis": "🧀🌶️🔺", "answer": "Nachos" },
-  { "category": "foods", "emojis": "🥘🦐🇪🇸", "answer": "Paella" },
-  { "category": "foods", "emojis": "🐟🍟📰", "answer": "Fish and Chips", "aliases": ["fish and chips"] },
-  { "category": "foods", "emojis": "☀️🍳🍯", "answer": "Pancakes", "aliases": ["pancake"] },
-  { "category": "foods", "emojis": "🐄🔥🧄", "answer": "Steak" },
-  { "category": "foods", "emojis": "🐔🔥🍳", "answer": "Fried Chicken" },
-  { "category": "foods", "emojis": "🌈❄️🥛", "answer": "Ice Cream", "aliases": ["icecream"] },
-
-  { "category": "places", "emojis": "🗼❤️", "answer": "Paris" },
-  { "category": "places", "emojis": "🗾🌸", "answer": "Tokyo" },
-  { "category": "places", "emojis": "🗽🍎", "answer": "New York", "aliases": ["nyc", "new york city", "ny"] },
-  { "category": "places", "emojis": "🐪🏜️🔺", "answer": "Egypt" },
-  { "category": "places", "emojis": "🎡☂️🎭", "answer": "London" },
-  { "category": "places", "emojis": "🏟️🍕🛵", "answer": "Rome" },
-  { "category": "places", "emojis": "🦘🌉🏄", "answer": "Sydney" },
-  { "category": "places", "emojis": "🎬🌴☀️", "answer": "Los Angeles", "aliases": ["la", "l.a.", "hollywood"] },
-  { "category": "places", "emojis": "🏙️🌴💎", "answer": "Dubai" },
-  { "category": "places", "emojis": "🎭🌊✝️", "answer": "Rio de Janeiro", "aliases": ["rio"] },
-  { "category": "places", "emojis": "🧱🎵🇩🇪", "answer": "Berlin" },
-  { "category": "places", "emojis": "🚲🌷🇳🇱", "answer": "Amsterdam" },
-  { "category": "places", "emojis": "🎰🌃💵", "answer": "Las Vegas", "aliases": ["vegas"] },
-  { "category": "places", "emojis": "🏜️☀️🐪", "answer": "Sahara Desert", "aliases": ["sahara"] },
-  { "category": "places", "emojis": "🏔️🦙🇵🇪", "answer": "Machu Picchu" },
-  { "category": "places", "emojis": "💦🌈🍁", "answer": "Niagara Falls", "aliases": ["niagara"] },
-  { "category": "places", "emojis": "🧱🏔️🇨🇳", "answer": "Great Wall of China", "aliases": ["great wall"] },
-  { "category": "places", "emojis": "❄️⛪🇷🇺", "answer": "Moscow" },
-  { "category": "places", "emojis": "🚣‍♂️💧🎭", "answer": "Venice" },
-  { "category": "places", "emojis": "⛪🎨🐉", "answer": "Barcelona" },
-
-  { "category": "movies", "emojis": "🃏😆", "answer": "Joker" },
-  { "category": "movies", "emojis": "🔪🕵️", "answer": "Knives Out" },
-  { "category": "movies", "emojis": "🤖🗑️", "answer": "WALL-E", "aliases": ["walle", "wall e"] },
-  { "category": "movies", "emojis": "🐀🍳", "answer": "Ratatouille" },
-  { "category": "movies", "emojis": "🐼🥋", "answer": "Kung Fu Panda" },
-  { "category": "movies", "emojis": "👧🐉♨️", "answer": "Spirited Away" },
-  { "category": "movies", "emojis": "🌃💃🎶", "answer": "La La Land" },
-  { "category": "movies", "emojis": "🥁🎓", "answer": "Whiplash" },
-  { "category": "movies", "emojis": "🔴🤖", "answer": "Iron Man" },
-  { "category": "movies", "emojis": "⚡🔨", "answer": "Thor" },
-  { "category": "movies", "emojis": "🛡️🇺🇸", "answer": "Captain America" },
-  { "category": "movies", "emojis": "🌌🦝", "answer": "Guardians of the Galaxy", "aliases": ["gotg", "guardians"] },
-  { "category": "movies", "emojis": "🤫👂", "answer": "A Quiet Place" },
-  { "category": "movies", "emojis": "🧟🚆", "answer": "Train to Busan" },
-  { "category": "movies", "emojis": "🏹👧🐻", "answer": "Brave" },
-  { "category": "movies", "emojis": "🏠🌺✨", "answer": "Encanto" },
-  { "category": "movies", "emojis": "🐕💀🔫", "answer": "John Wick" },
-  { "category": "movies", "emojis": "🔴⚔️", "answer": "Deadpool" },
-  { "category": "movies", "emojis": "💍🌋🧙‍♂️", "answer": "The Lord of the Rings", "aliases": ["lord of the rings", "lotr"] },
-  { "category": "movies", "emojis": "🦇🌃", "answer": "The Dark Knight", "aliases": ["dark knight"] },
-  { "category": "movies", "emojis": "🤡🎈", "answer": "It" },
-  { "category": "movies", "emojis": "☢️👨‍🔬", "answer": "Oppenheimer" },
-  { "category": "movies", "emojis": "👱‍♀️🩷", "answer": "Barbie" },
-  { "category": "movies", "emojis": "🌙🌊", "answer": "Moonlight" },
-  { "category": "movies", "emojis": "⬛🐾", "answer": "Black Panther" },
-
-  { "category": "songs", "emojis": "💜🌧️", "answer": "Purple Rain" },
-  { "category": "songs", "emojis": "💃👑", "answer": "Dancing Queen" },
-  { "category": "songs", "emojis": "⚡🔊", "answer": "Thunderstruck" },
-  { "category": "songs", "emojis": "🎆🎤", "answer": "Firework" },
-  { "category": "songs", "emojis": "💣💥", "answer": "Dynamite" },
-  { "category": "songs", "emojis": "💔🔧", "answer": "Fix You" },
-  { "category": "songs", "emojis": "🏠🌾🤠", "answer": "Take Me Home Country Roads", "aliases": ["country roads", "take me home"] },
-  { "category": "songs", "emojis": "😈🎸", "answer": "Highway to Hell" },
-  { "category": "songs", "emojis": "🌈☁️", "answer": "Somewhere Over the Rainbow", "aliases": ["over the rainbow"] },
-  { "category": "songs", "emojis": "🔥🌧️", "answer": "Set Fire to the Rain" },
-  { "category": "songs", "emojis": "☀️🎵", "answer": "Here Comes the Sun" },
-  { "category": "songs", "emojis": "🌙🚀", "answer": "Fly Me to the Moon" },
-  { "category": "songs", "emojis": "🎭🎤", "answer": "The Show Must Go On", "aliases": ["show must go on"] },
-  { "category": "songs", "emojis": "🌴🔥", "answer": "Welcome to the Jungle" },
-  { "category": "songs", "emojis": "🚪☁️", "answer": "Knocking on Heaven's Door", "aliases": ["knocking on heavens door"] },
-
-  { "category": "tv", "emojis": "⚽🏆", "answer": "Ted Lasso" },
-  { "category": "tv", "emojis": "🧟🌆", "answer": "The Last of Us", "aliases": ["last of us"] },
-  { "category": "tv", "emojis": "👑🐉🔥", "answer": "House of the Dragon", "aliases": ["hotd"] },
-  { "category": "tv", "emojis": "🌸💌", "answer": "Bridgerton" },
-  { "category": "tv", "emojis": "🕵️🔍🎻", "answer": "Sherlock" },
-  { "category": "tv", "emojis": "🐟🍍", "answer": "SpongeBob SquarePants", "aliases": ["spongebob", "sponge bob"] },
-  { "category": "tv", "emojis": "👔⚖️", "answer": "Suits" },
-  { "category": "tv", "emojis": "🔭🧪🤓", "answer": "The Big Bang Theory", "aliases": ["big bang theory"] },
-  { "category": "tv", "emojis": "🧛🌙🏠", "answer": "What We Do in the Shadows" },
-  { "category": "tv", "emojis": "🐎🏔️🤠", "answer": "Yellowstone" },
-  { "category": "tv", "emojis": "🏡🎩🍵", "answer": "Downton Abbey" },
-  { "category": "tv", "emojis": "💻🏢🍔", "answer": "Silicon Valley" },
-
-  { "category": "idioms", "emojis": "☁️9️⃣", "answer": "On cloud nine" },
-  { "category": "idioms", "emojis": "🔫🦶", "answer": "Shoot yourself in the foot", "aliases": ["shoot yourself in the foot", "shot yourself in the foot"] },
-  { "category": "idioms", "emojis": "🐟💨", "answer": "A fish out of water", "aliases": ["fish out of water"] },
-  { "category": "idioms", "emojis": "🪨⬇️", "answer": "Hit rock bottom" },
-  { "category": "idioms", "emojis": "🐝💼", "answer": "Busy as a bee" },
-  { "category": "idioms", "emojis": "⬛🐑", "answer": "Black sheep" },
-  { "category": "idioms", "emojis": "❄️💪", "answer": "Cold shoulder" },
-  { "category": "idioms", "emojis": "🥄🥈", "answer": "Born with a silver spoon", "aliases": ["silver spoon"] },
-  { "category": "idioms", "emojis": "🐘🏠", "answer": "Elephant in the room" },
-  { "category": "idioms", "emojis": "📖🚫", "answer": "Don't judge a book by its cover", "aliases": ["judge a book by its cover"] },
-  { "category": "idioms", "emojis": "🎁🐴👄", "answer": "Don't look a gift horse in the mouth", "aliases": ["look a gift horse in the mouth"] },
-  { "category": "idioms", "emojis": "💧🌊", "answer": "A drop in the ocean", "aliases": ["drop in the ocean"] },
-
-  { "category": "foods", "emojis": "🥑🍞", "answer": "Avocado Toast" },
-  { "category": "foods", "emojis": "🦞🧈", "answer": "Lobster" },
-  { "category": "foods", "emojis": "🫘🟤🌿", "answer": "Falafel" },
-  { "category": "foods", "emojis": "🔲🍳🍯", "answer": "Waffles", "aliases": ["waffle"] },
-  { "category": "foods", "emojis": "🇮🇹🥩🍅", "answer": "Spaghetti Bolognese", "aliases": ["spaghetti", "bolognese"] },
-  { "category": "foods", "emojis": "🥜🍞🍓", "answer": "Peanut Butter and Jelly", "aliases": ["pbj", "pb and j", "pb&j"] },
-  { "category": "foods", "emojis": "🥬🧀🐓", "answer": "Caesar Salad" },
-  { "category": "foods", "emojis": "🍳🥓", "answer": "Bacon and Eggs" },
-  { "category": "foods", "emojis": "🍵🟢", "answer": "Matcha" },
-  { "category": "foods", "emojis": "🇹🇭🥜🌶️", "answer": "Pad Thai" },
-
-  { "category": "places", "emojis": "☘️🍺🎶", "answer": "Dublin" },
-  { "category": "places", "emojis": "🌸⛩️", "answer": "Kyoto" },
-  { "category": "places", "emojis": "🎸🤠", "answer": "Nashville" },
-  { "category": "places", "emojis": "🌴🎷", "answer": "New Orleans" },
-  { "category": "places", "emojis": "🦅🏛️", "answer": "Washington DC", "aliases": ["washington", "dc", "washington d.c."] },
-  { "category": "places", "emojis": "🌺🌊", "answer": "Hawaii" },
-  { "category": "places", "emojis": "🏔️❄️", "answer": "Iceland" },
-  { "category": "places", "emojis": "🦘🪃", "answer": "Australia" },
-  { "category": "places", "emojis": "🐉🏮", "answer": "Beijing" },
-  { "category": "places", "emojis": "🕌🌙", "answer": "Istanbul" },
-
-  { "category": "sports", "emojis": "🏀🥅", "answer": "Basketball" },
-  { "category": "sports", "emojis": "⚽🥅", "answer": "Soccer", "aliases": ["football"] },
-  { "category": "sports", "emojis": "🎾🏆", "answer": "Tennis" },
-  { "category": "sports", "emojis": "⛳🏌️", "answer": "Golf" },
-  { "category": "sports", "emojis": "🏊‍♂️💦", "answer": "Swimming" },
-  { "category": "sports", "emojis": "🥊🔔", "answer": "Boxing" },
-  { "category": "sports", "emojis": "🤸‍♀️🏅", "answer": "Gymnastics" },
-  { "category": "sports", "emojis": "⚾🏟️", "answer": "Baseball" },
-  { "category": "sports", "emojis": "🏈🏆", "answer": "Super Bowl" },
-  { "category": "sports", "emojis": "🏆⚽🌍", "answer": "World Cup" },
-  { "category": "sports", "emojis": "🚴‍♂️🇫🇷🏆", "answer": "Tour de France" },
-  { "category": "sports", "emojis": "🏀⬇️", "answer": "Slam Dunk" },
-  { "category": "sports", "emojis": "🎩3️⃣⚽", "answer": "Hat Trick" },
-  { "category": "sports", "emojis": "🏠🏃‍♂️⚾", "answer": "Home Run" },
-  { "category": "sports", "emojis": "🎾💥🏆", "answer": "Grand Slam" },
-  { "category": "sports", "emojis": "🏃‍♂️🏁", "answer": "Marathon" },
-  { "category": "sports", "emojis": "🏄‍♂️🌊", "answer": "Surfing" },
-  { "category": "sports", "emojis": "⛷️🏔️❄️", "answer": "Skiing" },
-  { "category": "sports", "emojis": "🔥🏅🌍", "answer": "Olympic Games", "aliases": ["olympics", "the olympics"] },
-  { "category": "sports", "emojis": "🏒🧊⛸️", "answer": "Ice Hockey", "aliases": ["hockey"] },
-
-  { "category": "videogames", "emojis": "⛏️🌍🧱", "answer": "Minecraft" },
-  { "category": "videogames", "emojis": "🌪️🏗️🔫", "answer": "Fortnite" },
-  { "category": "videogames", "emojis": "🚀😊🔪", "answer": "Among Us" },
-  { "category": "videogames", "emojis": "🍄👨‍🦰⭐", "answer": "Super Mario", "aliases": ["mario"] },
-  { "category": "videogames", "emojis": "🗡️👑🌿", "answer": "The Legend of Zelda", "aliases": ["zelda", "legend of zelda"] },
-  { "category": "videogames", "emojis": "⚡🔴🎮", "answer": "Pokemon", "aliases": ["pokémon"] },
-  { "category": "videogames", "emojis": "🔫🎖️💥", "answer": "Call of Duty", "aliases": ["cod"] },
-  { "category": "videogames", "emojis": "🚗🔫💰", "answer": "Grand Theft Auto", "aliases": ["gta"] },
-  { "category": "videogames", "emojis": "📦⬇️🎮", "answer": "Tetris" },
-  { "category": "videogames", "emojis": "👻🟡🍒", "answer": "Pac-Man", "aliases": ["pacman", "pac man"] },
-  { "category": "videogames", "emojis": "🧱🎮👾", "answer": "Roblox" },
-  { "category": "videogames", "emojis": "🦸‍♂️🌍💥", "answer": "Overwatch" },
-  { "category": "videogames", "emojis": "⚔️🗺️👑", "answer": "League of Legends", "aliases": ["lol"] },
-  { "category": "videogames", "emojis": "🤖🌆🔫", "answer": "Cyberpunk 2077", "aliases": ["cyberpunk"] },
-  { "category": "videogames", "emojis": "🌾🏡💎", "answer": "Stardew Valley" },
-  { "category": "videogames", "emojis": "🌿🏝️🦝", "answer": "Animal Crossing" },
-  { "category": "videogames", "emojis": "🥊💥🕹️", "answer": "Street Fighter" },
-  { "category": "videogames", "emojis": "⚽🎮🏆", "answer": "FIFA" },
-  { "category": "videogames", "emojis": "🐺⚔️🌙", "answer": "The Witcher", "aliases": ["witcher"] },
-  { "category": "videogames", "emojis": "🤠🐎💀", "answer": "Red Dead Redemption", "aliases": ["red dead", "rdr"] }
+  {
+    "category": "movies",
+    "emojis": "🧊🚢🥶",
+    "answer": "Titanic"
+  },
+  {
+    "category": "movies",
+    "emojis": "🦇👨",
+    "answer": "Batman"
+  },
+  {
+    "category": "movies",
+    "emojis": "🕷️👨",
+    "answer": "Spider-Man"
+  },
+  {
+    "category": "movies",
+    "emojis": "🦁👑",
+    "answer": "The Lion King"
+  },
+  {
+    "category": "movies",
+    "emojis": "❄️👑",
+    "answer": "Frozen"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐠🔍",
+    "answer": "Finding Nemo"
+  },
+  {
+    "category": "movies",
+    "emojis": "🦖🏝️",
+    "answer": "Jurassic Park"
+  },
+  {
+    "category": "movies",
+    "emojis": "🦈🌊",
+    "answer": "Jaws"
+  },
+  {
+    "category": "movies",
+    "emojis": "⭐⚔️",
+    "answer": "Star Wars"
+  },
+  {
+    "category": "movies",
+    "emojis": "⚡👓🧙",
+    "answer": "Harry Potter"
+  },
+  {
+    "category": "movies",
+    "emojis": "🦸‍♂️🦸‍♀️🤝",
+    "answer": "The Avengers"
+  },
+  {
+    "category": "movies",
+    "emojis": "🤠🚀🧸",
+    "answer": "Toy Story"
+  },
+  {
+    "category": "movies",
+    "emojis": "🏠🎈🎈",
+    "answer": "Up"
+  },
+  {
+    "category": "movies",
+    "emojis": "👨‍👨‍👦🍝",
+    "answer": "The Godfather"
+  },
+  {
+    "category": "movies",
+    "emojis": "🚗👀",
+    "answer": "Cars"
+  },
+  {
+    "category": "movies",
+    "emojis": "🟢😤🧅",
+    "answer": "Shrek"
+  },
+  {
+    "category": "movies",
+    "emojis": "🏠😱👦",
+    "answer": "Home Alone"
+  },
+  {
+    "category": "movies",
+    "emojis": "🏃‍♂️🍫📦",
+    "answer": "Forrest Gump"
+  },
+  {
+    "category": "movies",
+    "emojis": "⚔️🏛️🦁",
+    "answer": "Gladiator"
+  },
+  {
+    "category": "movies",
+    "emojis": "🚀⏰🌌",
+    "answer": "Interstellar"
+  },
+  {
+    "category": "movies",
+    "emojis": "🌊👧🐚",
+    "answer": "Moana"
+  },
+  {
+    "category": "movies",
+    "emojis": "💀🎸🌸",
+    "answer": "Coco"
+  },
+  {
+    "category": "movies",
+    "emojis": "🧞‍♂️🪔✨",
+    "answer": "Aladdin"
+  },
+  {
+    "category": "movies",
+    "emojis": "🌹👸🦁",
+    "answer": "Beauty and the Beast"
+  },
+  {
+    "category": "movies",
+    "emojis": "💊🟢🕶️",
+    "answer": "The Matrix"
+  },
+  {
+    "category": "movies",
+    "emojis": "💤🌀🏙️",
+    "answer": "Inception"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐑🦋🤫",
+    "answer": "The Silence of the Lambs"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐟🧠🌊",
+    "answer": "Finding Dory"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐉💚🧝",
+    "answer": "How to Train Your Dragon"
+  },
+  {
+    "category": "movies",
+    "emojis": "🌪️👧🐕",
+    "answer": "The Wizard of Oz"
+  },
+  {
+    "category": "songs",
+    "emojis": "🪜☁️",
+    "answer": "Stairway to Heaven"
+  },
+  {
+    "category": "songs",
+    "emojis": "🏨☀️🌴",
+    "answer": "Hotel California"
+  },
+  {
+    "category": "songs",
+    "emojis": "👑🎤🎹",
+    "answer": "Bohemian Rhapsody"
+  },
+  {
+    "category": "songs",
+    "emojis": "💭🕊️",
+    "answer": "Imagine"
+  },
+  {
+    "category": "songs",
+    "emojis": "📅⬅️",
+    "answer": "Yesterday"
+  },
+  {
+    "category": "songs",
+    "emojis": "👋📞",
+    "answer": "Hello"
+  },
+  {
+    "category": "songs",
+    "emojis": "🤷💃",
+    "answer": "Shake It Off"
+  },
+  {
+    "category": "songs",
+    "emojis": "🐌🌶️",
+    "answer": "Despacito"
+  },
+  {
+    "category": "songs",
+    "emojis": "🎲🌊",
+    "answer": "Rolling in the Deep"
+  },
+  {
+    "category": "songs",
+    "emojis": "💍👯‍♀️",
+    "answer": "Single Ladies"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌃💡🕶️",
+    "answer": "Blinding Lights"
+  },
+  {
+    "category": "songs",
+    "emojis": "🏙️🕺✨",
+    "answer": "Uptown Funk"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌙🧟🎵",
+    "answer": "Thriller"
+  },
+  {
+    "category": "songs",
+    "emojis": "🏠🌻🎸",
+    "answer": "Sweet Home Alabama"
+  },
+  {
+    "category": "songs",
+    "emojis": "👁️🐯",
+    "answer": "Eye of the Tiger"
+  },
+  {
+    "category": "songs",
+    "emojis": "🎹🎵🍺",
+    "answer": "Piano Man"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌍🥁☔",
+    "answer": "Africa"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌟🧱",
+    "answer": "Wonderwall"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌹🔴💃",
+    "answer": "Roxanne"
+  },
+  {
+    "category": "songs",
+    "emojis": "🙌✌️🎵",
+    "answer": "Let It Be"
+  },
+  {
+    "category": "songs",
+    "emojis": "🙌✨🕊️",
+    "answer": "Hallelujah"
+  },
+  {
+    "category": "songs",
+    "emojis": "👃🧒💀",
+    "answer": "Smells Like Teen Spirit"
+  },
+  {
+    "category": "songs",
+    "emojis": "😊☀️👏",
+    "answer": "Happy"
+  },
+  {
+    "category": "songs",
+    "emojis": "🚫⏹️🎸",
+    "answer": "Don't Stop Me Now"
+  },
+  {
+    "category": "songs",
+    "emojis": "📐🫵",
+    "answer": "Shape of You"
+  },
+  {
+    "category": "tv",
+    "emojis": "👨‍🔬🧪💊",
+    "answer": "Breaking Bad"
+  },
+  {
+    "category": "tv",
+    "emojis": "⚔️👑🐉",
+    "answer": "Game of Thrones"
+  },
+  {
+    "category": "tv",
+    "emojis": "👽🚲🔦",
+    "answer": "Stranger Things"
+  },
+  {
+    "category": "tv",
+    "emojis": "☕👯‍♀️🛋️",
+    "answer": "Friends"
+  },
+  {
+    "category": "tv",
+    "emojis": "🏢📎",
+    "answer": "The Office"
+  },
+  {
+    "category": "tv",
+    "emojis": "🦑🎮💀",
+    "answer": "Squid Game"
+  },
+  {
+    "category": "tv",
+    "emojis": "👸👑🇬🇧",
+    "answer": "The Crown"
+  },
+  {
+    "category": "tv",
+    "emojis": "🚶‍♂️🧟‍♂️",
+    "answer": "The Walking Dead"
+  },
+  {
+    "category": "tv",
+    "emojis": "👨‍👩‍👧‍👦🟡🍩",
+    "answer": "The Simpsons"
+  },
+  {
+    "category": "tv",
+    "emojis": "🤷‍♂️☕🗽",
+    "answer": "Seinfeld"
+  },
+  {
+    "category": "tv",
+    "emojis": "👩‍⚕️❤️‍🩹🏥",
+    "answer": "Grey's Anatomy"
+  },
+  {
+    "category": "tv",
+    "emojis": "🏝️✈️❓",
+    "answer": "Lost"
+  },
+  {
+    "category": "tv",
+    "emojis": "🪖🧒💚",
+    "answer": "The Mandalorian"
+  },
+  {
+    "category": "tv",
+    "emojis": "🎩🔪🚬",
+    "answer": "Peaky Blinders"
+  },
+  {
+    "category": "tv",
+    "emojis": "💰🎭🏦",
+    "answer": "Money Heist"
+  },
+  {
+    "category": "tv",
+    "emojis": "📱😰🖥️",
+    "answer": "Black Mirror"
+  },
+  {
+    "category": "tv",
+    "emojis": "💊🇨🇴🚔",
+    "answer": "Narcos"
+  },
+  {
+    "category": "tv",
+    "emojis": "🦸‍♂️😈💉",
+    "answer": "The Boys"
+  },
+  {
+    "category": "tv",
+    "emojis": "💰👨‍👩‍👧‍👦📊",
+    "answer": "Succession"
+  },
+  {
+    "category": "tv",
+    "emojis": "☢️💥🏚️",
+    "answer": "Chernobyl"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🌧️🐱🐶",
+    "answer": "Raining cats and dogs"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🥚🥚🧺",
+    "answer": "Don't put all your eggs in one basket"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🦵💔",
+    "answer": "Break a leg"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🔨🎯",
+    "answer": "Hit the nail on the head"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🫘💧",
+    "answer": "Spill the beans"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐦🐦🪨",
+    "answer": "Kill two birds with one stone"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐦🌅🪱",
+    "answer": "The early bird catches the worm"
+  },
+  {
+    "category": "idioms",
+    "emojis": "💰💪🦵",
+    "answer": "Cost an arm and a leg"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🦷🔫",
+    "answer": "Bite the bullet"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🍰✅",
+    "answer": "Piece of cake"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🌧️😷",
+    "answer": "Under the weather"
+  },
+  {
+    "category": "idioms",
+    "emojis": "👊🛏️",
+    "answer": "Hit the sack"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🌕🔵",
+    "answer": "Once in a blue moon"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐱👜",
+    "answer": "Let the cat out of the bag"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🔺🧊",
+    "answer": "Tip of the iceberg"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐕🌳❌",
+    "answer": "Barking up the wrong tree"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🌉🔥",
+    "answer": "Burning bridges"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🦵😂",
+    "answer": "Pull someone's leg"
+  },
+  {
+    "category": "idioms",
+    "emojis": "💪📢",
+    "answer": "Actions speak louder than words"
+  },
+  {
+    "category": "idioms",
+    "emojis": "😺🔍☠️",
+    "answer": "Curiosity killed the cat"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇮🇹🍅🧀",
+    "answer": "Pizza"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇯🇵🐟🍚",
+    "answer": "Sushi"
+  },
+  {
+    "category": "foods",
+    "emojis": "🐄🥩🍞",
+    "answer": "Hamburger"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇲🇽🌽🌶️",
+    "answer": "Tacos"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇫🇷🌙🥖",
+    "answer": "Croissant"
+  },
+  {
+    "category": "foods",
+    "emojis": "🍜🥚🌿",
+    "answer": "Ramen"
+  },
+  {
+    "category": "foods",
+    "emojis": "🌯🫘🌶️",
+    "answer": "Burrito"
+  },
+  {
+    "category": "foods",
+    "emojis": "💨🥢🥩",
+    "answer": "Dumplings"
+  },
+  {
+    "category": "foods",
+    "emojis": "🍫❤️",
+    "answer": "Chocolate"
+  },
+  {
+    "category": "foods",
+    "emojis": "⭕🍞☕",
+    "answer": "Donut"
+  },
+  {
+    "category": "foods",
+    "emojis": "🌡️🐕",
+    "answer": "Hot Dog"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇮🇳🌶️🥘",
+    "answer": "Curry"
+  },
+  {
+    "category": "foods",
+    "emojis": "🧀🥚🍓",
+    "answer": "Cheesecake"
+  },
+  {
+    "category": "foods",
+    "emojis": "🧀🌶️🔺",
+    "answer": "Nachos"
+  },
+  {
+    "category": "foods",
+    "emojis": "🥘🦐🇪🇸",
+    "answer": "Paella"
+  },
+  {
+    "category": "foods",
+    "emojis": "🐟🍟📰",
+    "answer": "Fish and Chips"
+  },
+  {
+    "category": "foods",
+    "emojis": "☀️🍳🍯",
+    "answer": "Pancakes"
+  },
+  {
+    "category": "foods",
+    "emojis": "🐄🔥🧄",
+    "answer": "Steak"
+  },
+  {
+    "category": "foods",
+    "emojis": "🐔🔥🍳",
+    "answer": "Fried Chicken"
+  },
+  {
+    "category": "foods",
+    "emojis": "🌈❄️🥛",
+    "answer": "Ice Cream"
+  },
+  {
+    "category": "places",
+    "emojis": "🗼❤️",
+    "answer": "Paris"
+  },
+  {
+    "category": "places",
+    "emojis": "🗾🌸",
+    "answer": "Tokyo"
+  },
+  {
+    "category": "places",
+    "emojis": "🗽🍎",
+    "answer": "New York"
+  },
+  {
+    "category": "places",
+    "emojis": "🐪🏜️🔺",
+    "answer": "Egypt"
+  },
+  {
+    "category": "places",
+    "emojis": "🎡☂️🎭",
+    "answer": "London"
+  },
+  {
+    "category": "places",
+    "emojis": "🏟️🍕🛵",
+    "answer": "Rome"
+  },
+  {
+    "category": "places",
+    "emojis": "🦘🌉🏄",
+    "answer": "Sydney"
+  },
+  {
+    "category": "places",
+    "emojis": "🎬🌴☀️",
+    "answer": "Los Angeles"
+  },
+  {
+    "category": "places",
+    "emojis": "🏙️🌴💎",
+    "answer": "Dubai"
+  },
+  {
+    "category": "places",
+    "emojis": "🎭🌊✝️",
+    "answer": "Rio de Janeiro"
+  },
+  {
+    "category": "places",
+    "emojis": "🧱🎵🇩🇪",
+    "answer": "Berlin"
+  },
+  {
+    "category": "places",
+    "emojis": "🚲🌷🇳🇱",
+    "answer": "Amsterdam"
+  },
+  {
+    "category": "places",
+    "emojis": "🎰🌃💵",
+    "answer": "Las Vegas"
+  },
+  {
+    "category": "places",
+    "emojis": "🏜️☀️🐪",
+    "answer": "Sahara Desert"
+  },
+  {
+    "category": "places",
+    "emojis": "🏔️🦙🇵🇪",
+    "answer": "Machu Picchu"
+  },
+  {
+    "category": "places",
+    "emojis": "💦🌈🍁",
+    "answer": "Niagara Falls"
+  },
+  {
+    "category": "places",
+    "emojis": "🧱🏔️🇨🇳",
+    "answer": "Great Wall of China"
+  },
+  {
+    "category": "places",
+    "emojis": "❄️⛪🇷🇺",
+    "answer": "Moscow"
+  },
+  {
+    "category": "places",
+    "emojis": "🚣‍♂️💧🎭",
+    "answer": "Venice"
+  },
+  {
+    "category": "places",
+    "emojis": "⛪🎨🐉",
+    "answer": "Barcelona"
+  },
+  {
+    "category": "movies",
+    "emojis": "🃏😆",
+    "answer": "Joker"
+  },
+  {
+    "category": "movies",
+    "emojis": "🔪🕵️",
+    "answer": "Knives Out"
+  },
+  {
+    "category": "movies",
+    "emojis": "🤖🗑️",
+    "answer": "WALL-E"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐀🍳",
+    "answer": "Ratatouille"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐼🥋",
+    "answer": "Kung Fu Panda"
+  },
+  {
+    "category": "movies",
+    "emojis": "👧🐉♨️",
+    "answer": "Spirited Away"
+  },
+  {
+    "category": "movies",
+    "emojis": "🌃💃🎶",
+    "answer": "La La Land"
+  },
+  {
+    "category": "movies",
+    "emojis": "🥁🎓",
+    "answer": "Whiplash"
+  },
+  {
+    "category": "movies",
+    "emojis": "🔴🤖",
+    "answer": "Iron Man"
+  },
+  {
+    "category": "movies",
+    "emojis": "⚡🔨",
+    "answer": "Thor"
+  },
+  {
+    "category": "movies",
+    "emojis": "🛡️🇺🇸",
+    "answer": "Captain America"
+  },
+  {
+    "category": "movies",
+    "emojis": "🌌🦝",
+    "answer": "Guardians of the Galaxy"
+  },
+  {
+    "category": "movies",
+    "emojis": "🤫👂",
+    "answer": "A Quiet Place"
+  },
+  {
+    "category": "movies",
+    "emojis": "🧟🚆",
+    "answer": "Train to Busan"
+  },
+  {
+    "category": "movies",
+    "emojis": "🏹👧🐻",
+    "answer": "Brave"
+  },
+  {
+    "category": "movies",
+    "emojis": "🏠🌺✨",
+    "answer": "Encanto"
+  },
+  {
+    "category": "movies",
+    "emojis": "🐕💀🔫",
+    "answer": "John Wick"
+  },
+  {
+    "category": "movies",
+    "emojis": "🔴⚔️",
+    "answer": "Deadpool"
+  },
+  {
+    "category": "movies",
+    "emojis": "💍🌋🧙‍♂️",
+    "answer": "The Lord of the Rings"
+  },
+  {
+    "category": "movies",
+    "emojis": "🦇🌃",
+    "answer": "The Dark Knight"
+  },
+  {
+    "category": "movies",
+    "emojis": "🤡🎈",
+    "answer": "It"
+  },
+  {
+    "category": "movies",
+    "emojis": "☢️👨‍🔬",
+    "answer": "Oppenheimer"
+  },
+  {
+    "category": "movies",
+    "emojis": "👱‍♀️🩷",
+    "answer": "Barbie"
+  },
+  {
+    "category": "movies",
+    "emojis": "🌙🌊",
+    "answer": "Moonlight"
+  },
+  {
+    "category": "movies",
+    "emojis": "⬛🐾",
+    "answer": "Black Panther"
+  },
+  {
+    "category": "songs",
+    "emojis": "💜🌧️",
+    "answer": "Purple Rain"
+  },
+  {
+    "category": "songs",
+    "emojis": "💃👑",
+    "answer": "Dancing Queen"
+  },
+  {
+    "category": "songs",
+    "emojis": "⚡🔊",
+    "answer": "Thunderstruck"
+  },
+  {
+    "category": "songs",
+    "emojis": "🎆🎤",
+    "answer": "Firework"
+  },
+  {
+    "category": "songs",
+    "emojis": "💣💥",
+    "answer": "Dynamite"
+  },
+  {
+    "category": "songs",
+    "emojis": "💔🔧",
+    "answer": "Fix You"
+  },
+  {
+    "category": "songs",
+    "emojis": "🏠🌾🤠",
+    "answer": "Take Me Home Country Roads"
+  },
+  {
+    "category": "songs",
+    "emojis": "😈🎸",
+    "answer": "Highway to Hell"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌈☁️",
+    "answer": "Somewhere Over the Rainbow"
+  },
+  {
+    "category": "songs",
+    "emojis": "🔥🌧️",
+    "answer": "Set Fire to the Rain"
+  },
+  {
+    "category": "songs",
+    "emojis": "☀️🎵",
+    "answer": "Here Comes the Sun"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌙🚀",
+    "answer": "Fly Me to the Moon"
+  },
+  {
+    "category": "songs",
+    "emojis": "🎭🎤",
+    "answer": "The Show Must Go On"
+  },
+  {
+    "category": "songs",
+    "emojis": "🌴🔥",
+    "answer": "Welcome to the Jungle"
+  },
+  {
+    "category": "songs",
+    "emojis": "🚪☁️",
+    "answer": "Knocking on Heaven's Door"
+  },
+  {
+    "category": "tv",
+    "emojis": "⚽🏆",
+    "answer": "Ted Lasso"
+  },
+  {
+    "category": "tv",
+    "emojis": "🧟🌆",
+    "answer": "The Last of Us"
+  },
+  {
+    "category": "tv",
+    "emojis": "👑🐉🔥",
+    "answer": "House of the Dragon"
+  },
+  {
+    "category": "tv",
+    "emojis": "🌸💌",
+    "answer": "Bridgerton"
+  },
+  {
+    "category": "tv",
+    "emojis": "🕵️🔍🎻",
+    "answer": "Sherlock"
+  },
+  {
+    "category": "tv",
+    "emojis": "🐟🍍",
+    "answer": "SpongeBob SquarePants"
+  },
+  {
+    "category": "tv",
+    "emojis": "👔⚖️",
+    "answer": "Suits"
+  },
+  {
+    "category": "tv",
+    "emojis": "🔭🧪🤓",
+    "answer": "The Big Bang Theory"
+  },
+  {
+    "category": "tv",
+    "emojis": "🧛🌙🏠",
+    "answer": "What We Do in the Shadows"
+  },
+  {
+    "category": "tv",
+    "emojis": "🐎🏔️🤠",
+    "answer": "Yellowstone"
+  },
+  {
+    "category": "tv",
+    "emojis": "🏡🎩🍵",
+    "answer": "Downton Abbey"
+  },
+  {
+    "category": "tv",
+    "emojis": "💻🏢🍔",
+    "answer": "Silicon Valley"
+  },
+  {
+    "category": "idioms",
+    "emojis": "☁️9️⃣",
+    "answer": "On cloud nine"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🔫🦶",
+    "answer": "Shoot yourself in the foot"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐟💨",
+    "answer": "A fish out of water"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🪨⬇️",
+    "answer": "Hit rock bottom"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐝💼",
+    "answer": "Busy as a bee"
+  },
+  {
+    "category": "idioms",
+    "emojis": "⬛🐑",
+    "answer": "Black sheep"
+  },
+  {
+    "category": "idioms",
+    "emojis": "❄️💪",
+    "answer": "Cold shoulder"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🥄🥈",
+    "answer": "Born with a silver spoon"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🐘🏠",
+    "answer": "Elephant in the room"
+  },
+  {
+    "category": "idioms",
+    "emojis": "📖🚫",
+    "answer": "Don't judge a book by its cover"
+  },
+  {
+    "category": "idioms",
+    "emojis": "🎁🐴👄",
+    "answer": "Don't look a gift horse in the mouth"
+  },
+  {
+    "category": "idioms",
+    "emojis": "💧🌊",
+    "answer": "A drop in the ocean"
+  },
+  {
+    "category": "foods",
+    "emojis": "🥑🍞",
+    "answer": "Avocado Toast"
+  },
+  {
+    "category": "foods",
+    "emojis": "🦞🧈",
+    "answer": "Lobster"
+  },
+  {
+    "category": "foods",
+    "emojis": "🫘🟤🌿",
+    "answer": "Falafel"
+  },
+  {
+    "category": "foods",
+    "emojis": "🔲🍳🍯",
+    "answer": "Waffles"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇮🇹🥩🍅",
+    "answer": "Spaghetti Bolognese"
+  },
+  {
+    "category": "foods",
+    "emojis": "🥜🍞🍓",
+    "answer": "Peanut Butter and Jelly"
+  },
+  {
+    "category": "foods",
+    "emojis": "🥬🧀🐓",
+    "answer": "Caesar Salad"
+  },
+  {
+    "category": "foods",
+    "emojis": "🍳🥓",
+    "answer": "Bacon and Eggs"
+  },
+  {
+    "category": "foods",
+    "emojis": "🍵🟢",
+    "answer": "Matcha"
+  },
+  {
+    "category": "foods",
+    "emojis": "🇹🇭🥜🌶️",
+    "answer": "Pad Thai"
+  },
+  {
+    "category": "places",
+    "emojis": "☘️🍺🎶",
+    "answer": "Dublin"
+  },
+  {
+    "category": "places",
+    "emojis": "🌸⛩️",
+    "answer": "Kyoto"
+  },
+  {
+    "category": "places",
+    "emojis": "🎸🤠",
+    "answer": "Nashville"
+  },
+  {
+    "category": "places",
+    "emojis": "🌴🎷",
+    "answer": "New Orleans"
+  },
+  {
+    "category": "places",
+    "emojis": "🦅🏛️",
+    "answer": "Washington DC"
+  },
+  {
+    "category": "places",
+    "emojis": "🌺🌊",
+    "answer": "Hawaii"
+  },
+  {
+    "category": "places",
+    "emojis": "🏔️❄️",
+    "answer": "Iceland"
+  },
+  {
+    "category": "places",
+    "emojis": "🦘🪃",
+    "answer": "Australia"
+  },
+  {
+    "category": "places",
+    "emojis": "🐉🏮",
+    "answer": "Beijing"
+  },
+  {
+    "category": "places",
+    "emojis": "🕌🌙",
+    "answer": "Istanbul"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏀🥅",
+    "answer": "Basketball"
+  },
+  {
+    "category": "sports",
+    "emojis": "⚽🥅",
+    "answer": "Soccer"
+  },
+  {
+    "category": "sports",
+    "emojis": "🎾🏆",
+    "answer": "Tennis"
+  },
+  {
+    "category": "sports",
+    "emojis": "⛳🏌️",
+    "answer": "Golf"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏊‍♂️💦",
+    "answer": "Swimming"
+  },
+  {
+    "category": "sports",
+    "emojis": "🥊🔔",
+    "answer": "Boxing"
+  },
+  {
+    "category": "sports",
+    "emojis": "🤸‍♀️🏅",
+    "answer": "Gymnastics"
+  },
+  {
+    "category": "sports",
+    "emojis": "⚾🏟️",
+    "answer": "Baseball"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏈🏆",
+    "answer": "Super Bowl"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏆⚽🌍",
+    "answer": "World Cup"
+  },
+  {
+    "category": "sports",
+    "emojis": "🚴‍♂️🇫🇷🏆",
+    "answer": "Tour de France"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏀⬇️",
+    "answer": "Slam Dunk"
+  },
+  {
+    "category": "sports",
+    "emojis": "🎩3️⃣⚽",
+    "answer": "Hat Trick"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏠🏃‍♂️⚾",
+    "answer": "Home Run"
+  },
+  {
+    "category": "sports",
+    "emojis": "🎾💥🏆",
+    "answer": "Grand Slam"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏃‍♂️🏁",
+    "answer": "Marathon"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏄‍♂️🌊",
+    "answer": "Surfing"
+  },
+  {
+    "category": "sports",
+    "emojis": "⛷️🏔️❄️",
+    "answer": "Skiing"
+  },
+  {
+    "category": "sports",
+    "emojis": "🔥🏅🌍",
+    "answer": "Olympic Games"
+  },
+  {
+    "category": "sports",
+    "emojis": "🏒🧊⛸️",
+    "answer": "Ice Hockey"
+  },
+  {
+    "category": "videogames",
+    "emojis": "⛏️🌍🧱",
+    "answer": "Minecraft"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🌪️🏗️🔫",
+    "answer": "Fortnite"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🚀😊🔪",
+    "answer": "Among Us"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🍄👨‍🦰⭐",
+    "answer": "Super Mario"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🗡️👑🌿",
+    "answer": "The Legend of Zelda"
+  },
+  {
+    "category": "videogames",
+    "emojis": "⚡🔴🎮",
+    "answer": "Pokemon"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🔫🎖️💥",
+    "answer": "Call of Duty"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🚗🔫💰",
+    "answer": "Grand Theft Auto"
+  },
+  {
+    "category": "videogames",
+    "emojis": "📦⬇️🎮",
+    "answer": "Tetris"
+  },
+  {
+    "category": "videogames",
+    "emojis": "👻🟡🍒",
+    "answer": "Pac-Man"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🧱🎮👾",
+    "answer": "Roblox"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🦸‍♂️🌍💥",
+    "answer": "Overwatch"
+  },
+  {
+    "category": "videogames",
+    "emojis": "⚔️🗺️👑",
+    "answer": "League of Legends"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🤖🌆🔫",
+    "answer": "Cyberpunk 2077"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🌾🏡💎",
+    "answer": "Stardew Valley"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🌿🏝️🦝",
+    "answer": "Animal Crossing"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🥊💥🕹️",
+    "answer": "Street Fighter"
+  },
+  {
+    "category": "videogames",
+    "emojis": "⚽🎮🏆",
+    "answer": "FIFA"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🐺⚔️🌙",
+    "answer": "The Witcher"
+  },
+  {
+    "category": "videogames",
+    "emojis": "🤠🐎💀",
+    "answer": "Red Dead Redemption"
+  }
 ]

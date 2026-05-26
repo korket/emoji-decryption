@@ -80,8 +80,9 @@ function setYouTubeStatus(
 
 function countYouTubeCall(kind: 'check' | 'chat_poll', extra: Partial<Pick<YouTubeStatus, 'lastPollDelayMs'>> = {}): void {
   const source = kind === 'check' ? 'youtube.liveBroadcasts.list' : 'youtube.liveChatMessages.list';
+  const units = kind === 'chat_poll' ? 5 : 1;
   try {
-    recordApiUsage(apiUsageDb, { source });
+    recordApiUsage(apiUsageDb, { source, units });
   } catch (err) {
     console.warn('Failed to record API usage estimate:', err instanceof Error ? err.message : String(err));
   }
@@ -90,7 +91,7 @@ function countYouTubeCall(kind: 'check' | 'chat_poll', extra: Partial<Pick<YouTu
     ...youtubeStatus,
     checks: youtubeStatus.checks + (kind === 'check' ? 1 : 0),
     chatPolls: youtubeStatus.chatPolls + (kind === 'chat_poll' ? 1 : 0),
-    estimatedQuotaUnits: youtubeStatus.estimatedQuotaUnits + 1,
+    estimatedQuotaUnits: youtubeStatus.estimatedQuotaUnits + units,
     updatedAt: Date.now(),
     ...extra,
   };

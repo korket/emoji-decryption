@@ -41,13 +41,11 @@ describe('puzzles repo', () => {
         category: 'tv',
         emojis: '☕👯‍♀️🛋️',
         answer: 'Friends',
-        aliases: ['friend'],
       }),
     );
     expect(inserted.id).toBeGreaterThan(0);
     expect(inserted.category).toBe('tv');
     expect(inserted.answer).toBe('Friends');
-    expect(inserted.aliases).toEqual(['friend']);
     expect(inserted.difficulty).toBe(3);
     expect(inserted.lastUsed).toBeNull();
     expect(inserted.useCount).toBe(0);

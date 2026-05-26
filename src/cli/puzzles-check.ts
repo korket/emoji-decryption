@@ -40,7 +40,6 @@ for (let i = 0; i < puzzles.length; i++) {
   if (/\s{2,}/.test(p.answer)) warnings.push(`${label}: answer contains repeated whitespace; strict matching requires viewers to type it exactly`);
   if (/[^\p{L}\p{N}\s]/u.test(p.answer)) warnings.push(`${label}: answer contains punctuation/symbols; strict matching requires them exactly`);
   if (/^(the|a|an)\s+/i.test(p.answer)) warnings.push(`${label}: leading article is required under strict matching`);
-  if (p.aliases.length > 0) warnings.push(`${label}: ${p.aliases.length} alias(es) present but ignored by the matcher`);
 
   const key = p.answer.toLowerCase();
   answers.set(key, [...(answers.get(key) ?? []), i + 1]);

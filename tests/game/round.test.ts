@@ -17,7 +17,7 @@ const BASE = 1_000_000; // arbitrary epoch for "round starts at"
 function puzzle(overrides: Partial<Puzzle> = {}): Puzzle {
   return {
     id: 1, category: 'movies', emojis: '🎬🚢', answer: 'Titanic',
-    aliases: [], difficulty: 3, lastUsed: null, useCount: 0,
+    difficulty: 3, lastUsed: null, useCount: 0,
     ...overrides,
   };
 }
@@ -258,10 +258,10 @@ describe('RoundEngine — processGuess', () => {
     expect(events.filter((e) => e.type === 'correct_guess')).toHaveLength(0);
   });
 
-  it('rejects aliases because only the canonical answer is accepted', () => {
+  it('rejects anything that is not the canonical answer', () => {
     const { events, onEvent } = capture();
     const engine = new RoundEngine(onEvent);
-    engine.start(puzzle({ aliases: ['titanic ship'] }), 1, BASE);
+    engine.start(puzzle(), 1, BASE);
     events.length = 0;
 
     engine.processGuess(msg('u1', 'titanic ship'), BASE);

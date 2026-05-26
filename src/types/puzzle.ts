@@ -7,7 +7,6 @@ export const PuzzleInput = z.object({
   category: Category,
   emojis: z.string().min(1),
   answer: z.string().min(1),
-  aliases: z.array(z.string()).default([]),
   difficulty: z.number().int().min(1).max(5).default(3),
 });
 export type PuzzleInput = z.infer<typeof PuzzleInput>;
@@ -17,7 +16,6 @@ export interface Puzzle {
   category: Category;
   emojis: string;
   answer: string;
-  aliases: string[];
   difficulty: number;
   lastUsed: number | null;
   useCount: number;

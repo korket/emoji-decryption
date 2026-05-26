@@ -153,6 +153,7 @@ export class ChatPoller {
         this.emitStatus('auth_refreshing', 'YouTube auth expired. Attempting token refresh.', { httpStatus: status });
         try {
           await this.auth.getAccessToken();
+          this.refreshAttempted = false;
           this.schedule(1_000);
         } catch {
           console.error('[chat] Token refresh failed. Delete token.json and restart to re-authenticate.');
