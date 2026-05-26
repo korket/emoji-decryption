@@ -14,6 +14,7 @@ async function makeServer(opts: Parameters<typeof createServer>[0] = {}): Promis
     interRoundMs: 50,
     restartDelayMs: 50,
     logger: false,
+    controlLogging: false,
     ...opts,
   });
   servers.push(server);

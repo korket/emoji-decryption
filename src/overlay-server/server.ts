@@ -41,6 +41,7 @@ export interface ServerOptions {
   restartDelayMs?: number;
   autoStart?: boolean;
   logger?: boolean;
+  controlLogging?: boolean;
   beforeGameStart?: () => void | Promise<void>;
   afterGameStart?: (ctx: GameStartContext) => void | Promise<void>;
   onGameStop?: () => void | Promise<void>;
@@ -61,6 +62,7 @@ export async function createServer(opts: ServerOptions = {}) {
     restartDelayMs = DEFAULT_RESTART_DELAY_MS,
     autoStart = false,
     logger = true,
+    controlLogging = true,
     beforeGameStart,
     afterGameStart,
     onGameStop,
@@ -72,6 +74,14 @@ export async function createServer(opts: ServerOptions = {}) {
   seedPuzzlesIfEmpty(db);
 
   const clients = new Set<WsClient>();
+
+  function controlLog(message: string): void {
+    if (controlLogging) console.log(`[control] ${message}`);
+  }
+
+  function controlError(message: string): void {
+    if (controlLogging) console.error(`[control] ${message}`);
+  }
 
   function broadcast(event: GameEvent): void {
     const msg = JSON.stringify(event);
@@ -178,7 +188,7 @@ export async function createServer(opts: ServerOptions = {}) {
     broadcast(event);
   }
 
-  const fastify = Fastify({ logger });
+  const fastify = Fastify({ logger, disableRequestLogging: true });
   await fastify.register(websocketPlugin);
 
   fastify.get('/health', async () => ({
@@ -192,18 +202,31 @@ export async function createServer(opts: ServerOptions = {}) {
     if (checkYouTube === undefined) {
       return reply.code(404).send({ ok: false, error: 'YouTube status check is not configured.' });
     }
-    return checkYouTube();
+    controlLog('Checking YouTube API status...');
+    const result = await checkYouTube();
+    controlLog('YouTube API status check complete.');
+    return result;
   });
 
   fastify.post('/game/start', async (_request, reply) => {
+    controlLog('Game start requested.');
     const result = await startGame(true);
-    if (!result.ok) return reply.code(500).send(result);
+    if (!result.ok) {
+      controlError(`Game start failed: ${result.error ?? 'unknown error'}`);
+      return reply.code(500).send(result);
+    }
+    controlLog(result.alreadyRunning ? 'Game is already running.' : 'Game started.');
     return result;
   });
 
   fastify.post('/game/stop', async (_request, reply) => {
+    controlLog('Game stop requested.');
     const result = await stopGame();
-    if (!result.ok) return reply.code(500).send(result);
+    if (!result.ok) {
+      controlError(`Game stop failed: ${result.error ?? 'unknown error'}`);
+      return reply.code(500).send(result);
+    }
+    controlLog(result.stopped ? 'Game stopped.' : 'Game was already idle.');
     return result;
   });
 

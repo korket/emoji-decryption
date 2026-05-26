@@ -54,19 +54,13 @@ cp .env.example .env
 # Authenticate with YouTube (first run only)
 npm run auth
 
-# Start backend (idle; no countdown or rounds yet)
-npm start
-
-# Start overlay dev server (separate terminal)
-cd overlay && npm run dev
-
-# When OBS/YouTube are ready, start the game
-./start-game.bat
+# Start the Windows control panel
+./start-control-gui.bat
 ```
 
-The backend starts idle by default so you can prepare OBS and the stream first. `start-game.bat` calls `POST /game/start`, attaches to the active YouTube live chat, then starts the pre-game countdown. Use `stop-game.bat` to stop the current game and return the overlay to the waiting state.
+The control panel starts/stops the backend and overlay, shows embedded logs, checks YouTube API/quota status, and starts/stops the game. The backend starts idle by default so you can prepare OBS and the stream first. `Start Game` attaches to the active YouTube live chat, then starts the pre-game countdown. `Stop Game` returns the overlay to the waiting state.
 
-On Windows, you can also use `start-control-gui.bat` to open a Python control panel with embedded backend/overlay logs and buttons for backend restart, overlay start, YouTube API/quota check, game start, game stop, and status refresh. The backend checks YouTube API status once on startup; later GUI status refreshes read cached backend state and do not repeatedly call YouTube. The GUI also shows estimated YouTube API units used by the current backend process.
+The backend checks YouTube API status once on startup; later GUI status refreshes read cached backend state and do not repeatedly call YouTube. The GUI also shows estimated YouTube API units used by the current backend process.
 
 Run `npm run puzzles:check` to validate the seed puzzle bank and report strict-matching risks such as ignored aliases, punctuation-sensitive answers, duplicate answers, or missing categories.
 
