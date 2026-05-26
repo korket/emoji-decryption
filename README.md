@@ -1,18 +1,18 @@
 # Emoguessr
 
-A fully-automated YouTube Shorts Live game where viewers race to guess what emoji puzzles represent. Correct guesses score points within a 10-second bonus window; a live leaderboard shows the top players.
+A fully-automated YouTube Shorts Live game where viewers race to be first to guess what emoji puzzles represent. The first exact correct guess scores points; a live leaderboard shows the top players.
 
 **Status:** Live and running.
 
 ## How it works
 
-Emoji puzzles (e.g. `🧊🚢🥶` = "Titanic") appear on stream. Viewers type guesses in YouTube live chat. The system fuzzy-matches answers, awards points on a sliding scale, reveals letter hints if nobody wins, then moves to the next puzzle automatically.
+Emoji puzzles (e.g. `🧊🚢🥶` = "Titanic") appear on stream. Viewers type guesses in YouTube live chat. The system accepts only exact canonical answers, ignoring letter case only. The first correct guess ends the round, awards points based on the current phase, then moves to the next puzzle after the result screen.
 
-- **Bonus window (0–10s):** 10 pts for the first correct guess
-- **Open guessing (10–30s):** 5 pts
-- **Hint 1 (30–50s):** 3 pts — first letter of each word revealed
-- **Hint 2 (50–70s):** 3 pts — ~half the letters revealed
-- Round ends automatically after 80s; next puzzle starts after a 10s inter-round screen
+- **Bonus window (0–10s):** first exact correct guess earns 10 pts
+- **Open guessing (10–30s):** first exact correct guess earns 5 pts
+- **Hint 1 (30–50s):** first exact correct guess earns 3 pts; first letter of each word is revealed
+- **Hint 2 (50–70s):** first exact correct guess earns 3 pts; ~half the letters are revealed
+- If nobody guesses correctly, the answer is revealed at 70s; next puzzle starts after a 10s inter-round screen
 
 ## Stack
 
@@ -65,6 +65,10 @@ cd overlay && npm run dev
 ```
 
 The backend starts idle by default so you can prepare OBS and the stream first. `start-game.bat` calls `POST /game/start`, attaches to the active YouTube live chat, then starts the pre-game countdown. Use `stop-game.bat` to stop the current game and return the overlay to the waiting state.
+
+On Windows, you can also use `start-control-gui.bat` to open a Python control panel with embedded backend/overlay logs and buttons for backend restart, overlay start, YouTube API/quota check, game start, game stop, and status refresh. The backend checks YouTube API status once on startup; later GUI status refreshes read cached backend state and do not repeatedly call YouTube. The GUI also shows estimated YouTube API units used by the current backend process.
+
+Run `npm run puzzles:check` to validate the seed puzzle bank and report strict-matching risks such as ignored aliases, punctuation-sensitive answers, duplicate answers, or missing categories.
 
 ## Running with pm2 (production)
 

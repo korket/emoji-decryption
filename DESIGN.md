@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-**Emoguessr** is a fully-automated viewer-interactive game broadcast on YouTube Shorts Live. Emoji puzzles (e.g., `🧊🚢🥶` = "Titanic") appear on a vertical 9:16 video stream; viewers guess in YouTube live chat; the system fuzzy-matches each chat message against the canonical answer and awards points to correct guessers within a 10-second scoring window. An on-screen leaderboard updates throughout the broadcast.
+**Emoguessr** is a fully-automated viewer-interactive game broadcast on YouTube Shorts Live. Emoji puzzles (e.g., `🧊🚢🥶` = "Titanic") appear on a vertical 9:16 video stream; viewers guess in YouTube live chat; the system accepts only exact canonical answers, ignoring letter case only. The first correct guess ends the round and awards points based on the current phase. An on-screen leaderboard updates throughout the broadcast.
 
 The application is **single-tenant**: it runs locally on the operator's own machine to power the operator's own personal YouTube channel. It is not distributed to other users, not operated as a service, and not accessed by any third party.
 
@@ -27,11 +27,11 @@ The application is **single-tenant**: it runs locally on the operator's own mach
 │ YouTube Live Chat                                            │
 │   ↓ poll every 5 seconds (youtube.liveChatMessages.list)     │
 │ Chat Ingest Service                                          │
-│   ↓ normalize + dedupe by message ID                         │
+│   ↓ dedupe by message ID + exact answer check                 │
 │ Game Engine  (Node.js + TypeScript)                          │
 │   ├── Round state machine (REVEAL → SCORING → HINTS → END)   │
-│   ├── Answer matcher (normalize + Levenshtein + alias list)  │
-│   ├── Scoring (10s window: 10/8/6/4/2 pts → 20s @ 1pt)       │
+│   ├── Answer matcher (exact match, case-insensitive only)    │
+│   ├── Scoring (first correct: 10 pts / 5 pts / 3 pts)        │
 │   └── Leaderboard (session + 7-day rolling)                  │
 │   ↓ WebSocket push                                           │
 │ Overlay  (Svelte HTML/JS — rendered as OBS Browser Source)   │
@@ -103,7 +103,7 @@ CREATE TABLE puzzles (
   category    TEXT NOT NULL,
   emojis      TEXT NOT NULL,
   answer      TEXT NOT NULL,
-  aliases     TEXT,                    -- JSON array of acceptable variants
+  aliases     TEXT,                    -- Legacy puzzle metadata; ignored by matcher
   difficulty  INTEGER,
   last_used   INTEGER,                 -- Unix timestamp
   use_count   INTEGER DEFAULT 0
@@ -116,6 +116,13 @@ CREATE TABLE scores (
   round_id     TEXT,
   points       INTEGER,
   timestamp    INTEGER
+);
+
+CREATE TABLE api_usage_events (
+  source       TEXT,                   -- YouTube endpoint estimate source
+  units        INTEGER,
+  timestamp    INTEGER,
+  detail       TEXT
 );
 
 CREATE TABLE sessions (
@@ -168,7 +175,7 @@ Chat message **text content is not persisted**. Messages are evaluated by the ma
 | HTTP / WebSocket | Fastify + `ws` |
 | YouTube API client | `googleapis` (official npm package) |
 | Database | SQLite via `better-sqlite3` |
-| Fuzzy matching | `fastest-levenshtein` + custom normalization |
+| Answer matching | Exact canonical answer, case-insensitive only |
 | Validation | `zod` |
 | Logging | `pino` (JSON output) |
 | Overlay | Svelte + TypeScript (Vite) |

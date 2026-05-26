@@ -136,7 +136,7 @@ export class RoundEngine {
     if (computePhase(s.startedAt, now) === 'RESOLVE') return;
     if (s.guessers.some((g) => g.userId === msg.userId)) return;
 
-    const result = matchAnswer(msg.text, s.puzzle.answer, s.puzzle.aliases);
+    const result = matchAnswer(msg.text, s.puzzle.answer);
     if (result.kind === 'none') return;
 
     const elapsed = now - s.startedAt;

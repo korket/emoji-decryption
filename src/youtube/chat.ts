@@ -7,6 +7,14 @@ export interface BroadcastInfo {
   liveChatId: string;
 }
 
+export interface ChatPollerStatus {
+  state: 'starting' | 'connected' | 'auth_refreshing' | 'auth_failed' | 'quota_exceeded' | 'forbidden' | 'ended' | 'retrying';
+  message: string;
+  updatedAt: number;
+  httpStatus?: number;
+  reason?: string;
+}
+
 export async function findActiveBroadcast(auth: Auth.OAuth2Client): Promise<BroadcastInfo> {
   const youtube = google.youtube({ version: 'v3', auth });
 
@@ -45,9 +53,13 @@ export class ChatPoller {
     private readonly auth: Auth.OAuth2Client,
     private readonly liveChatId: string,
     private readonly onMessage: (msg: ChatMessage) => void,
+    private readonly onStatus: (status: ChatPollerStatus) => void = () => {},
+    private readonly minPollIntervalMs: number = 5_000,
+    private readonly onPoll: (delayMs: number) => void = () => {},
   ) {}
 
   start(): void {
+    this.emitStatus('starting', 'Starting YouTube live chat poller.');
     void this.poll();
   }
 
@@ -79,8 +91,10 @@ export class ChatPoller {
       const { nextPageToken, pollingIntervalMillis, items = [] } = res.data;
       this.nextPageToken = nextPageToken ?? undefined;
       this.backoffMs = 2_000;
+      this.emitStatus('connected', 'Connected to YouTube live chat.');
 
-      const delay = pollingIntervalMillis ?? 5_000;
+      const delay = Math.max(pollingIntervalMillis ?? 5_000, this.minPollIntervalMs);
+      this.onPoll(delay);
 
       if (!this.primed) {
         // First poll: discard historical messages, only capture the page token
@@ -100,7 +114,10 @@ export class ChatPoller {
 
           if (!text || !userId || !userHandle) continue;
 
-          this.onMessage({ id, userId, userHandle, text, receivedAt: now });
+          const publishedAt = item.snippet?.publishedAt;
+          const receivedAt = publishedAt != null ? Date.parse(publishedAt) : now;
+
+          this.onMessage({ id, userId, userHandle, text, receivedAt: Number.isNaN(receivedAt) ? now : receivedAt });
         }
       }
 
@@ -108,6 +125,14 @@ export class ChatPoller {
     } catch (err: unknown) {
       await this.handleError(err);
     }
+  }
+
+  private emitStatus(
+    state: ChatPollerStatus['state'],
+    message: string,
+    extra: Partial<Omit<ChatPollerStatus, 'state' | 'message' | 'updatedAt'>> = {},
+  ): void {
+    this.onStatus({ state, message, updatedAt: Date.now(), ...extra });
   }
 
   private async handleError(err: unknown): Promise<void> {
@@ -125,34 +150,40 @@ export class ChatPoller {
       if (!this.refreshAttempted) {
         this.refreshAttempted = true;
         console.warn('[chat] Auth 401 — attempting token refresh...');
+        this.emitStatus('auth_refreshing', 'YouTube auth expired. Attempting token refresh.', { httpStatus: status });
         try {
           await this.auth.getAccessToken();
           this.schedule(1_000);
         } catch {
           console.error('[chat] Token refresh failed. Delete token.json and restart to re-authenticate.');
+          this.emitStatus('auth_failed', 'YouTube token refresh failed. Delete token.json and re-authenticate.', { httpStatus: status });
           this.stop();
         }
         return;
       }
       console.error('[chat] Auth still failing after refresh. Delete token.json and restart to re-authenticate.');
+      this.emitStatus('auth_failed', 'YouTube auth is still failing after refresh. Re-authenticate.', { httpStatus: status });
       this.stop();
       return;
     }
 
     if (status === 403 && reason === 'quotaExceeded') {
       console.error('[chat] YouTube API quota exceeded. Chat polling stopped for today.');
+      this.emitStatus('quota_exceeded', 'YouTube API quota exceeded. Chat polling stopped for today.', { httpStatus: status, reason });
       this.stop();
       return;
     }
 
     if (status === 403) {
       console.error(`[chat] YouTube API 403 forbidden (reason: ${reason ?? 'unknown'}). Stopping.`);
+      this.emitStatus('forbidden', `YouTube API forbidden: ${reason ?? 'unknown'}.`, { httpStatus: status, ...(reason !== undefined ? { reason } : {}) });
       this.stop();
       return;
     }
 
     if (status === 404 || reason === 'liveChatEnded') {
       console.log('[chat] Live chat ended. Stopping poller.');
+      this.emitStatus('ended', 'YouTube live chat ended. Chat polling stopped.', { ...(status !== undefined ? { httpStatus: status } : {}), ...(reason !== undefined ? { reason } : {}) });
       this.stop();
       return;
     }
@@ -160,6 +191,7 @@ export class ChatPoller {
     // Transient / network error — exponential backoff
     const msg = err instanceof Error ? err.message : String(err);
     console.warn(`[chat] Poll error, retrying in ${this.backoffMs}ms: ${msg}`);
+    this.emitStatus('retrying', `YouTube chat poll error. Retrying in ${this.backoffMs}ms: ${msg}`, { ...(status !== undefined ? { httpStatus: status } : {}), ...(reason !== undefined ? { reason } : {}) });
     const delay = this.backoffMs;
     this.backoffMs = Math.min(this.backoffMs * 2, 60_000);
     this.schedule(delay);

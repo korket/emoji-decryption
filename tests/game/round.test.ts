@@ -258,13 +258,35 @@ describe('RoundEngine — processGuess', () => {
     expect(events.filter((e) => e.type === 'correct_guess')).toHaveLength(0);
   });
 
-  it('accepts alias', () => {
+  it('rejects aliases because only the canonical answer is accepted', () => {
     const { events, onEvent } = capture();
     const engine = new RoundEngine(onEvent);
     engine.start(puzzle({ aliases: ['titanic ship'] }), 1, BASE);
     events.length = 0;
 
     engine.processGuess(msg('u1', 'titanic ship'), BASE);
+    expect(events.filter((e) => e.type === 'correct_guess')).toHaveLength(0);
+  });
+
+  it('rejects punctuation differences', () => {
+    const { events, onEvent } = capture();
+    const engine = new RoundEngine(onEvent);
+    engine.start(puzzle({ answer: 'Spider-Man' }), 1, BASE);
+    events.length = 0;
+
+    engine.processGuess(msg('u1', 'spiderman'), BASE);
+    engine.processGuess(msg('u2', 'spider man'), BASE + 1_001);
+
+    expect(events.filter((e) => e.type === 'correct_guess')).toHaveLength(0);
+  });
+
+  it('accepts exact punctuation with different casing', () => {
+    const { events, onEvent } = capture();
+    const engine = new RoundEngine(onEvent);
+    engine.start(puzzle({ answer: 'Spider-Man' }), 1, BASE);
+    events.length = 0;
+
+    engine.processGuess(msg('u1', 'spider-man'), BASE);
     expect(events[0]).toMatchObject({ type: 'correct_guess' });
   });
 

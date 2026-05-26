@@ -35,6 +35,17 @@ const MIGRATIONS: readonly string[] = [
   CREATE INDEX idx_scores_timestamp ON scores(timestamp);
   CREATE INDEX idx_scores_user      ON scores(user_id);
   `,
+  `
+  CREATE TABLE api_usage_events (
+    id        INTEGER PRIMARY KEY,
+    source    TEXT NOT NULL,
+    units     INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL,
+    detail    TEXT
+  );
+  CREATE INDEX idx_api_usage_timestamp ON api_usage_events(timestamp);
+  CREATE INDEX idx_api_usage_source    ON api_usage_events(source);
+  `,
 ];
 
 export function runMigrations(db: DB): void {

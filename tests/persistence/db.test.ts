@@ -18,6 +18,7 @@ describe('database init', () => {
     expect(names).toContain('puzzles');
     expect(names).toContain('sessions');
     expect(names).toContain('scores');
+    expect(names).toContain('api_usage_events');
     db.close();
   });
 

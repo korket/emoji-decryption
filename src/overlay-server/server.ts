@@ -40,9 +40,12 @@ export interface ServerOptions {
   maxRounds?: number;
   restartDelayMs?: number;
   autoStart?: boolean;
+  logger?: boolean;
   beforeGameStart?: () => void | Promise<void>;
   afterGameStart?: (ctx: GameStartContext) => void | Promise<void>;
   onGameStop?: () => void | Promise<void>;
+  getHealth?: () => Record<string, unknown>;
+  checkYouTube?: () => Promise<Record<string, unknown>>;
 }
 
 const DEFAULT_RESTART_DELAY_MS = 10_000;
@@ -57,9 +60,12 @@ export async function createServer(opts: ServerOptions = {}) {
     maxRounds,
     restartDelayMs = DEFAULT_RESTART_DELAY_MS,
     autoStart = false,
+    logger = true,
     beforeGameStart,
     afterGameStart,
     onGameStop,
+    getHealth,
+    checkYouTube,
   } = opts;
 
   const db = openDatabase(dbPath);
@@ -172,14 +178,22 @@ export async function createServer(opts: ServerOptions = {}) {
     broadcast(event);
   }
 
-  const fastify = Fastify({ logger: true });
+  const fastify = Fastify({ logger });
   await fastify.register(websocketPlugin);
 
   fastify.get('/health', async () => ({
     ok: true,
     uptime: Math.floor(process.uptime()),
     ...getLoopStatus(),
+    ...getHealth?.(),
   }));
+
+  fastify.post('/youtube/check', async (_request, reply) => {
+    if (checkYouTube === undefined) {
+      return reply.code(404).send({ ok: false, error: 'YouTube status check is not configured.' });
+    }
+    return checkYouTube();
+  });
 
   fastify.post('/game/start', async (_request, reply) => {
     const result = await startGame(true);

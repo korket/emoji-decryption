@@ -1,8 +1,4 @@
 @echo off
-echo Stopping existing server...
-taskkill /F /IM node.exe /T >nul 2>&1
-
-echo Starting backend server in idle mode...
-start "Emoguessr Server" cmd /k "npm run dev"
-
-echo Done. Backend running in new window. Use start-game.bat when ready.
+echo restart.bat no longer kills all node.exe processes.
+echo Use the control GUI for safe backend restart and embedded logs.
+call "%~dp0start-control-gui.bat"
