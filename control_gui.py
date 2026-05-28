@@ -25,6 +25,14 @@ BACKEND_URL = 'http://127.0.0.1:3000'
 OVERLAY_URL = 'http://127.0.0.1:5173'
 GOOGLE_QUOTA_URL = 'https://console.cloud.google.com/apis/api/youtube.googleapis.com/quotas'
 LOG_MAX_LINES = 5000
+BACKEND_DEPENDENCY_MARKERS = (
+    ROOT / 'node_modules' / 'tsx' / 'package.json',
+    ROOT / 'node_modules' / 'better-sqlite3' / 'package.json',
+)
+OVERLAY_DEPENDENCY_MARKERS = (
+    OVERLAY_DIR / 'node_modules' / '@sveltejs' / 'vite-plugin-svelte' / 'package.json',
+    OVERLAY_DIR / 'node_modules' / 'vite' / 'package.json',
+)
 
 ANSI_RE = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
 IS_WINDOWS = sys.platform == 'win32'
@@ -38,6 +46,10 @@ def npm_executable() -> str:
 
 def clean_log_line(line: str) -> str:
     return ANSI_RE.sub('', line.rstrip('\r\n'))
+
+
+def format_command(command: list[str]) -> str:
+    return ' '.join(command)
 
 
 class ManagedProcess:
@@ -188,12 +200,14 @@ class ControlGui:
         self.root.geometry('1000x720')
         self.root.minsize(820, 560)
 
-        npm = npm_executable()
-        self.backend = ManagedProcess('Backend', [npm, 'run', 'dev'], ROOT, self.log)
-        self.overlay = ManagedProcess('Overlay', [npm, 'run', 'dev'], OVERLAY_DIR, self.log)
+        self.npm = npm_executable()
+        self.backend = ManagedProcess('Backend', [self.npm, 'run', 'dev'], ROOT, self.log)
+        self.overlay = ManagedProcess('Overlay', [self.npm, 'run', 'dev'], OVERLAY_DIR, self.log)
         self.log_queue: queue.Queue[tuple[str, str]] = queue.Queue()
         self.text_widgets: dict[str, tk.Text] = {}
         self.buttons: dict[str, ttk.Button] = {}
+        self.installing_dependencies: set[str] = set()
+        self.install_lock = threading.Lock()
         self.backend_online = False
         self.game_active = False
 
@@ -309,10 +323,12 @@ class ControlGui:
         backend_managed = self.backend.is_running()
         overlay_running = self.overlay.is_running()
         backend_external = self.backend_online and not backend_managed
+        backend_installing = self.is_installing_dependencies('Backend')
+        overlay_installing = self.is_installing_dependencies('Overlay')
 
-        self.set_button('Restart Backend', not backend_external)
+        self.set_button('Restart Backend', not backend_external and not backend_installing)
         self.set_button('Stop Backend', backend_managed)
-        self.set_button('Start Overlay', not overlay_running)
+        self.set_button('Start Overlay', not overlay_running and not overlay_installing)
         self.set_button('Stop Overlay', overlay_running)
         self.set_button('Start Game', self.backend_online and not self.game_active)
         self.set_button('Stop Game', self.backend_online and self.game_active)
@@ -323,14 +339,97 @@ class ControlGui:
         if button is not None:
             button.configure(state='normal' if enabled else 'disabled')
 
+    def is_installing_dependencies(self, name: str) -> bool:
+        with self.install_lock:
+            return name in self.installing_dependencies
+
+    def set_installing_dependencies(self, name: str, installing: bool) -> None:
+        with self.install_lock:
+            if installing:
+                self.installing_dependencies.add(name)
+            else:
+                self.installing_dependencies.discard(name)
+        self.root.after(0, self.update_buttons)
+
+    def run_logged_command(self, tab: str, command: list[str], cwd: Path) -> int | None:
+        flags = CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP if IS_WINDOWS else 0
+        self.log(tab, f'Running: {format_command(command)}')
+        try:
+            process = subprocess.Popen(
+                command,
+                cwd=str(cwd),
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                bufsize=1,
+                creationflags=flags,
+                start_new_session=not IS_WINDOWS,
+            )
+        except OSError as err:
+            self.log(tab, f'Failed to run {format_command(command)}: {err}')
+            return None
+
+        if process.stdout is not None:
+            for line in process.stdout:
+                cleaned = clean_log_line(line)
+                if cleaned:
+                    self.log(tab, cleaned)
+        return process.wait()
+
+    def ensure_dependencies(self, name: str, cwd: Path, markers: tuple[Path, ...]) -> bool:
+        missing = [marker for marker in markers if not marker.exists()]
+        if not missing:
+            return True
+
+        self.set_installing_dependencies(name, True)
+        try:
+            package_json = cwd / 'package.json'
+            if not package_json.exists():
+                self.log(name, f'Cannot install dependencies: {package_json} does not exist.')
+                return False
+
+            missing_list = ', '.join(str(path.relative_to(cwd)) for path in missing)
+            self.log(name, f'Dependencies missing: {missing_list}')
+            self.log(name, f'Installing dependencies in {cwd}...')
+            code = self.run_logged_command(name, [self.npm, 'install', '--include=dev'], cwd)
+            if code != 0:
+                message = f'Dependency install failed for {name} with code {code}.'
+                self.log(name, message)
+                self.root.after(0, lambda message=message: messagebox.showerror(f'{name} Dependencies Failed', message))
+                return False
+
+            still_missing = [marker for marker in markers if not marker.exists()]
+            if still_missing:
+                missing_after = ', '.join(str(path.relative_to(cwd)) for path in still_missing)
+                message = f'Dependency install finished, but these packages are still missing: {missing_after}'
+                self.log(name, message)
+                self.root.after(0, lambda message=message: messagebox.showerror(f'{name} Dependencies Missing', message))
+                return False
+
+            self.log(name, 'Dependencies installed.')
+            return True
+        finally:
+            self.set_installing_dependencies(name, False)
+
     def restart_backend(self) -> None:
-        self.run_async(lambda: self.backend.restart())
+        self.run_async(self._restart_backend)
+
+    def _restart_backend(self) -> None:
+        if self.ensure_dependencies('Backend', ROOT, BACKEND_DEPENDENCY_MARKERS):
+            self.backend.restart()
 
     def stop_backend(self) -> None:
         self.run_async(lambda: self.backend.stop())
 
     def start_overlay(self) -> None:
-        self.run_async(lambda: self.overlay.start())
+        self.run_async(self._start_overlay)
+
+    def _start_overlay(self) -> None:
+        if self.ensure_dependencies('Overlay', OVERLAY_DIR, OVERLAY_DEPENDENCY_MARKERS):
+            self.overlay.start()
 
     def stop_overlay(self) -> None:
         self.run_async(lambda: self.overlay.stop())

@@ -61,6 +61,8 @@ npm run auth
 
 The control panel starts/stops the backend and overlay, shows embedded logs, checks YouTube API/quota status, and starts/stops the game. The backend starts idle by default so you can prepare OBS and the stream first. `Start Game` attaches to the active YouTube live chat, then starts the pre-game countdown. `Stop Game` returns the overlay to the waiting state.
 
+On a new device, if dependencies were not installed yet, the control panel will run `npm install --include=dev` in the missing backend or overlay folder before starting that process.
+
 The backend checks YouTube API status once on startup; later GUI status refreshes read cached backend state and do not repeatedly call YouTube. The GUI also shows estimated YouTube API units used by the current backend process.
 
 Run `npm run puzzles:check` to validate the seed puzzle bank and report strict-matching risks such as ignored aliases, punctuation-sensitive answers, duplicate answers, or missing categories.
